@@ -9,42 +9,39 @@
 </head>
 <body>
     <form id="info-knabber">
-        <h1>Gi meg infoen din</h1>
+        <h1 id="title">Gi meg infoen din</h1>
         <div class="input">
-            <input type="text" id="fname"  name="fornavn" placeholder=" ">
+            <input type="text" id="fname"  name="fornavn" placeholder=" " data-input>
             <label for="fname">Fornavn</label>
         </div>
         <div class="input">
-            <input type="text" id="lname" name="etternavn" placeholder=" ">
+            <input type="text" id="lname" name="etternavn" placeholder=" " data-input>
             <label for="lname" >Etternavn</label>
         </div>
         <div class="input">
-            <input type="text" id="adresse" name="adresse" placeholder=" ">
+            <input type="text" id="adresse" name="adresse" placeholder=" " data-input>
             <label for="adresse">Adresse</label>
         </div>
         <div class="input">
-            <input type="text" id="postnummer" name="postnummer" placeholder=" ">
+            <input type="text" id="postnummer" name="postnummer" placeholder=" " data-input>
             <label for="postnummer">Postnummer</label>
         </div>
         <div class="input">
-            <input type="text" id="poststed" name="poststed" placeholder=" ">
+            <input type="text" id="poststed" name="poststed" placeholder=" " data-input>
             <label for="poststed">Poststed</label>
         </div>
         <div class="input">
-            <input type="tel" id="tel" name="telefon" placeholder=" ">
+            <input type="tel" id="tel" name="telefon" placeholder=" " data-input>
             <label for="tel">Telefon</label>
         </div>
         <div class="input">
-            <input type="passord" id="password" name="passord" placeholder=" ">
+            <input type="passord" id="password" name="passord" placeholder=" " data-input>
             <label for="passord">Passord</label>
         </div>
 
         <input type="submit" >
-    </form>
 
-    <div>
-        <p>Lagret data:</p>
-        <p id="data"></p>
-    </div>
+        <p id="error"></p>
+    </form>
 </body>
 </html>
