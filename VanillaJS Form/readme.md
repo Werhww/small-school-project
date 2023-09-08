@@ -1,6 +1,7 @@
 ## Vanlig Javascript form lagrer
 ---
-***Skole oppgave***
+**Skole oppgave**
+
 Denne nettsiden er laget med vanlig javascript.
 Du fyller ut informasjonene og trykker "send inn", så vil dataen lagres i localstorage. Hver gang du åpner siden vil daten i localstorage bli hentet of vist.
 
