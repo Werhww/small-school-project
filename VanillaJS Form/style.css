@@ -1,0 +1,89 @@
+body, p, h1, input, label {
+    padding: 0;
+    margin: 0;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    gap: 3rem
+}
+
+form {
+    width: 100vw;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    gap: 2rem;
+}
+
+.input {
+    position: relative;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: end;
+    gap: .3rem;
+
+    height: 4rem;
+}
+
+.input > input {
+    transition: all 0.3s ease;
+
+    border: none;
+    filter: drop-shadow(1px 1px 1px rgb(0, 0 ,0));
+    border-radius: 0.5rem;
+
+    font-size: 1.5rem;
+    padding: 0.6rem 1rem;
+}
+
+.input > label {
+    transition: all 0.3s ease;
+    font-size: 1.5rem;
+
+    position: absolute;
+    left: 1rem;
+    bottom: .6rem;
+
+    z-index: 10;
+}
+
+.input > input:hover, .input > input:focus  {
+    border: none;
+    outline: none;
+}
+
+.input > input:focus ~ label, .input:hover > label   {
+    bottom: 3.6rem;
+}
+
+.input > input:not(:placeholder-shown) ~ label {
+    opacity: 0;
+}
+
+.input > input:focus, .input:hover > input{
+    filter: drop-shadow(1px 1px 10px rgb(0, 0 ,0));
+}
+
+input[type="submit"] {
+    transition: all 0.3s ease; 
+
+    width: 20rem;
+    font-size: 1.5rem;
+    padding: 0.6rem 1rem;
+    border-radius: 0.5rem;
+    border: 0;
+    outline: 0;
+
+    background-color: white;
+    filter: drop-shadow(1px 1px 1px rgb(0, 0 ,0));
+}
+
+input[type="submit"]:hover {
+
+    filter: drop-shadow(1px 1px 10px rgb(0, 0 ,0));
+}
