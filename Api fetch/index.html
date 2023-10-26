@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div id="rnUser">loading...</div>
+
+    <div id="allUsers"></div>
+    
+    <script>
+        const rnUser = document.getElementById('rnUser');
+        const allUsers = document.getElementById('allUsers');
+
+        async function getData() {
+            const res = await fetch("https://randomuser.me/api/?results=100")
+
+            const data = await res.json()
+
+            updateView(data.results[0])
+            console.log(data)
+            for(let i = 0; i < data.results.length; i++) {
+                addUser(data.results[i])
+            }
+            
+        }
+
+        function updateView(user) {
+            rnUser.innerHTML = `
+            <img src="${user.picture.large}" alt="">
+            <h1>${user.name.title} ${user.name.first} ${user.name.last}</h1>
+            <h2>location: ${user.location.city}, ${user.location.country}</h2>
+            <p>tel: ${user.cell}</p>
+            <p>gender: ${user.gender}</p>
+            `
+        }
+
+        function addUser(data) {
+            const user = document.createElement('div')
+            user.className = 'person'
+
+            user.innerHTML = `
+            <img src="${data.picture.large}" alt="">
+            <p>${data.name.title} ${data.name.first} ${data.name.last}</p>
+            <p>gender: ${data.gender}</p>
+            `
+            user.addEventListener('click', () => {
+                updateView(data)
+            })
+
+            allUsers.append(user)
+        }
+
+        
+        getData()
+    </script>
+
+    <style>
+        #allUsers {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .person {
+            display: flex;  
+            flex-direction: column;
+            border: 1px solid #ccc;
+        }
+
+        .person > img {
+            width: 2rem;
+            height: 2rem;
+            border-radius: 50%;
+        }
+    </style>
+</body>
+</html>
