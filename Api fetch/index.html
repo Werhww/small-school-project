@@ -6,75 +6,295 @@
     <title>Document</title>
 </head>
 <body>
-    <div id="rnUser">loading...</div>
+    <div id="filters">
+        <h1>Filters:</h1>
+        
+    </div>
 
-    <div id="allUsers"></div>
+    <div id="allUsers" data-open="false"></div>
+    <div id="outside"></div>
     
     <script>
-        const rnUser = document.getElementById('rnUser');
+        const rnUser = document.getElementById('rnUser'); 
         const allUsers = document.getElementById('allUsers');
+        const outsideClick = document.getElementById('outside');
+        const filters = document.getElementById('filters');
+
+        let fullData = []
+
+        outsideClick.addEventListener('click', () => {
+            allUsers.childNodes.forEach(user => {
+                user.dataset.open = false
+            })
+            allUsers.dataset.open = false
+        })
 
         async function getData() {
             const res = await fetch("https://randomuser.me/api/?results=100")
 
             const data = await res.json()
+            fullData = data.results
+            console.log(data.results[0])
 
-            updateView(data.results[0])
-            console.log(data)
             for(let i = 0; i < data.results.length; i++) {
                 addUser(data.results[i])
             }
             
         }
 
-        function updateView(user) {
-            rnUser.innerHTML = `
-            <img src="${user.picture.large}" alt="">
-            <h1>${user.name.title} ${user.name.first} ${user.name.last}</h1>
-            <h2>location: ${user.location.city}, ${user.location.country}</h2>
-            <p>tel: ${user.cell}</p>
-            <p>gender: ${user.gender}</p>
-            `
-        }
-
         function addUser(data) {
             const user = document.createElement('div')
             user.className = 'person'
+            user.dataset.open = false
 
             user.innerHTML = `
-            <img src="${data.picture.large}" alt="">
-            <p>${data.name.title} ${data.name.first} ${data.name.last}</p>
-            <p>gender: ${data.gender}</p>
+            <div class="content">
+                <img src="${data.picture.large}" alt="">
+                <p>${data.name.title}</p>
+                <p>${data.name.first}</p>
+                <p>${data.name.last}</p>
+            </div>
+            <div class="dropdown">
+                <p>${data.email}</p>
+                <p>${data.phone}</p>
+                <p>${data.location.city}</p>
+                <p>${data.location.country}</p>
+            </div>
             `
             user.addEventListener('click', () => {
-                updateView(data)
+                allUsers.dataset.open =  user.dataset.open === 'true'?  false : true
+                user.dataset.open = user.dataset.open === 'true' ? false : true
+                console.log(data)
             })
 
             allUsers.append(user)
         }
 
+        function addFilters(filterContent, filter) {
+            const filterBtn = document.createElement('div')
+            filterBtn.innerHTML = filterContent
+            filterBtn.className = 'filter'
+
+            filterBtn.addEventListener('click', () => {
+                allUsers.innerHTML = ''
+
+                const items = filter()
+
+                items.forEach(item => {
+                    addUser(item)
+                })
+            })
+
+            filters.appendChild(filterBtn)
+        }
+
         
+        addFilters('| All', () => {
+            return fullData
+        })
+        addFilters('| Male', () => {
+            return fullData.filter(user => user.gender == 'male')
+        })
+        addFilters('| Female', () => {
+            return fullData.filter(user => user.gender == 'female')
+        })
+        addFilters('| Age:', () => {
+            return fullData
+        })
+        addFilters('0 -> 20', () => {
+            return fullData.filter(user => user.dob.age <= 20)
+        })
+        addFilters('20 -> 40', () => {
+            return fullData.filter(user => user.dob.age <= 40 && user.dob.age > 20)
+        })
+        addFilters('40 -> 60', () => {
+            return fullData.filter(user => user.dob.age <= 60 && user.dob.age > 40)
+        })
+        addFilters('60 -> 80', () => {
+            return fullData.filter(user => user.dob.age <= 80 && user.dob.age > 60)
+        })
+        addFilters('| Sort by lastname:', () => {
+            return fullData
+        })
+        addFilters('ascending', () => {
+            return fullData.sort((a, b) => {
+                if(a.name.last < b.name.last) {
+                    return -1
+                }
+                if(a.name.last > b.name.last) {
+                    return 1
+                }
+                return 0
+            })
+        })
+        addFilters('descending', () => {
+            return fullData.sort((a, b) => {
+                if(a.name.last < b.name.last) {
+                    return 1
+                }
+                if(a.name.last > b.name.last) {
+                    return -1
+                }
+                return 0
+            })  
+        })
+        addFilters('| Sort by firstname:', () => {
+            return fullData
+        })
+
+        addFilters('ascending', () => {
+            return fullData.sort((a, b) => {
+                if(a.name.first < b.name.first) {
+                    return -1
+                }
+                if(a.name.first > b.name.first) {
+                    return 1
+                }
+                return 0
+            })
+        })
+
+        addFilters('descending', () => {
+            return fullData.sort((a, b) => {
+                if(a.name.first < b.name.first) {
+                    return 1
+                }
+                if(a.name.first > b.name.first) {
+                    return -1
+                }
+                return 0
+            })
+        })
+
         getData()
     </script>
 
     <style>
+        body {
+            background-color: #323232;
+            overflow-x: hidden;
+            user-select: none;
+            padding: 1rem 2rem;
+
+            color: #fff;
+        }
+
+        #filters {
+            padding-left: 3rem;
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .filter {
+            cursor: pointer;
+        }
+
         #allUsers {
             display: flex;
             flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
             gap: 1rem;
         }
 
-        .person {
-            display: flex;  
-            flex-direction: column;
-            border: 1px solid #ccc;
+        #outside {
+            position: fixed;
+            top: 0;
+            left: 0;
+
+            width: 100vw;
+            height: 100vh;
+            z-index: 10;
         }
 
-        .person > img {
-            width: 2rem;
-            height: 2rem;
+        #allUsers[data-open="false"] ~ #outside {
+            display: none;
+        }
+
+        p {
+            margin: 0;
+        }
+
+        .person {
+            transition: all 0.2s ease-in-out;
+            position: relative;
+        }
+
+        .content {
+            position: relative;
+
+            display: flex;  
+            flex-direction: column;
+            align-items: center;
+
+            gap: 0.3rem;
+
+            padding: 1.3rem 1rem;
+
+            background-color: #323232;
+            filter: drop-shadow(0 0 0.5rem #000);
+
+            color: #fff;
+
+            width: 9rem;
+
+            z-index: 5;
+        }
+
+        .content:hover {
+            cursor: pointer;
+        }
+
+        .person[data-open="true"] {
+            z-index: 100;
+            filter: drop-shadow(0 0 10rem #000);
+        }
+
+
+        .person[data-open="true"] > .content {
+            z-index: 100;
+            filter: none;
+        }
+
+        .content > img {
+            width: 5rem;
+            height: 5rem;
             border-radius: 50%;
         }
+
+
+        .dropdown {
+            transition: all 0.2s ease-in-out;
+
+            position: absolute;
+            transform: translate(-50%, 0);
+            left: 50%;
+            top: 11.95rem;
+
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.3rem;
+
+            overflow: hidden;
+
+            padding: 1rem .6rem;
+
+            background-color: #323232;
+
+            color: #fff;
+
+            width: 15rem;
+
+        }
+
+        .person[data-open="false"] > .dropdown {
+            width: 0;
+            top: 0;
+        }
+
     </style>
 </body>
 </html>
