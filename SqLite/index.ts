@@ -1,22 +1,33 @@
 import express from 'express'
-import Database from 'better-sqlite3';
-const db = new Database('foobar.db',  { verbose: console.log});
+import { PrismaClient, User } from '@prisma/client';
+import { join } from 'path';
 
-const app: express.Application = express();
-const port: number = 3000;
+const prisma = new PrismaClient();
 
-db.exec('CREATE TABLE IF NOT EXISTS') 
- 
+const app = express();
+const port = 3000;
+
+app.use(express.json())
+app.use(express.urlencoded({ extended: true }))
+app.use(express.static(join(__dirname, 'public')))
+
+
+
 app.listen(port, () => {
     console.log(`http://localhost:${port}/`);
 })
 
 app.get('/', (req, res) => {
-    
-    const stmt = db.prepare('INSERT INTO people VALUES (?, ?, ?)');
-    stmt.run('John Doe', 25, 'M');
-    console.log(db.prepare('SELECT * FROM sqlite_master').all());
-    const somedata = db
-    
-    res.send(somedata);
+    res.sendFile('/index.html');
+});
+
+
+app.get('api/users', (req, res) => {
+    const body = req.body as User
+
+    const user = prisma.user.create({
+        data: body
+    })
+
+    res.json(user);
 });
