@@ -1,6 +1,5 @@
-const name = document.getElementById('name');
-const email = document.getElementById('email');
-const submit = document.getElementById('submit');
+const form = document.getElementById('createUserForm');
+
 
 async function request(path, body) {
     return fetch('/api/users', {
