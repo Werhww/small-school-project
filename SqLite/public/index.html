@@ -5,14 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="script.js" defer></script>
     
-    <title>Document</title>
+    <title>New user</title>
 </head>
 <body>
     <form id="createUserForm">
-        <input type="text"  placeholder="email">
-        <input type="text" placeholder="name">
+        <input type="text"  placeholder="email" name="email">
+        <input type="text" placeholder="name" name="name">
         <button id="submit">create user</button>
-
+    </form>
+    <form id="createPostForm">
+        <input type="number" placeholder="authorId" name="authorId">
+        <input type="text"  placeholder="title" name="title">
+        <button id="submit">create Post</button>
     </form>
 </body>
 </html>
