@@ -11,19 +11,11 @@ const publicFiles = join(__dirname, "public");
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
+app.use(express.static(publicFiles))
 
 app.listen(port, () => {
     console.log(`http://localhost:${port}/`);
 })
-
-app.get("/", (req, res) => {
-    res.sendFile(join("index.html"), {root: publicFiles});
-});
-
-app.get("/script.js", (req, res) => {  
-    res.sendFile(join("script.js"), {root: publicFiles}) 
-});
-
 
 app.post("/api/user", async (req, res) => {
     const body = req.body as User
