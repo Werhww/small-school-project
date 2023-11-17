@@ -11,10 +11,10 @@ model User {
   id           Int       @id @default(autoincrement())
   password     String    @unique
   role         Role      @default(MEMBER)
-  manager    Manager?
-  member       Member?
-  parrent      Parrent?
   personal Personal?
+  parrent      Parrent?
+  member       Member?
+  manager    Manager?
 }
 
 model Personal {
@@ -30,8 +30,6 @@ model Personal {
   postalCode String
   userId     Int      @unique
   user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@map("UserPersonal")
 }
 
 model Parrent {
@@ -39,10 +37,7 @@ model Parrent {
   userId   Int      @unique
   user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   childern Member[] @relation("MemberToParrent")
-
-  @@map("UserParrent")
-}
-
+} 
 model Member {
   id        Int       @id @default(autoincrement())
   userId    Int       @unique

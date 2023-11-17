@@ -1,88 +1,121 @@
 import { PrismaClient, type User, type Personal, type Parrent, type Member, type Companie, type Manager } from '@prisma/client'
 const prisma = new PrismaClient()
 
-export function createUser(user:User) {
-    return prisma.user.create({
+export async function createUser(user:User) {
+    return await prisma.user.create({
         data: user
     })
 }
 
-export function addUserPersonalInfo(user:User, personal:Personal) {
-    return prisma.user.update({
+export async function deleteUser(user:User) {
+    return await prisma.user.delete({
         where: {
             id: user.id
-        },
-        data: {
-            personal: {
-                create: personal
-            }
         }
     })
 }
 
-export function addUserParrentInfo(user:User, parrent:Parrent) {
-    return prisma.user.update({
+export async function findUserById(userId:number) {
+    return await prisma.user.findUnique({
         where: {
-            id: user.id
-        },
-        data: {
-            parrent: {
-                create: parrent
-            }
+            id: userId
         }
     })
 }
 
-export function addUserMemberInfo(user:User, member:Member) {
-    return prisma.user.update({
-        where: {
-            id: user.id
-        },
-        data: {
-            member: {
-                create: member
-            }
-        }
+export async function addPersonalToUser(personal:Personal) {
+    return await prisma.personal.create({
+        data: personal
     })
 }
 
-export function addUserManagerInfo(user:User, manager:Manager) {
-    return prisma.user.update({
+export async function changePersonal(personal:Personal) {
+    return await prisma.personal.update({
         where: {
-            id: user.id
+            id: personal.id
         },
-        data: {
-            manager: {
-                create: manager
-            }
-        }
+        data: personal
     })
-
 }
 
-export function addManagerToCompanie(manager:Manager, Companie:Companie) {
-    return prisma.manager.update({
+export async function addParrentToUser(parrent:Parrent) {
+    return await prisma.parrent.create({
+        data: parrent
+    })
+}
+
+export async function addChildToParrent(parrent:Parrent, childId:number) {
+    return await prisma.parrent.update({
         where: {
-            id: manager.id
+            id: parrent.id
         },
         data: {
-            companie: {
-                connectOrCreate: {
-                    where: {
-                        id: Companie.id
-                    },
-                    create: Companie
+            childern: {
+                connect: {
+                    id: childId
                 }
             }
         }
     })
-
 }
 
-export function deleteUser(user:User) {
-    return prisma.user.delete({
+export async function addMemberToUser(member:Member) {
+    return await prisma.member.create({
+        data: member
+    })
+}
+
+export async function changeMember(member:Member) {
+    return await prisma.member.update({
         where: {
-            id: user.id
+            id: member.id
+        },
+        data: member
+    })
+}
+
+export async function addManagerToUser(manager:Manager) {
+    return await prisma.manager.create({
+        data: manager
+    })
+}
+
+export async function changeManager(manager:Manager) {
+    return await prisma.manager.update({
+        where: {
+            id: manager.id
+        },
+        data: manager
+    })
+}
+
+export async function addCompanieToUser(companieId:number, user:User) {
+    return await prisma.manager.update({
+        where: {
+            userId: user.id
+        },
+        data: {
+            companie: {
+                connect: {
+                    id: companieId
+                }
+            }
         }
     })
 }
+
+export async function createCompanie(companie:Companie) {
+    return await prisma.companie.create({
+        data: companie
+    })
+}
+
+export async function changeCompanie(companie:Companie) {
+    return await prisma.companie.update({
+        where: {
+            id: companie.id
+        },
+        data: companie
+    })
+}
+

@@ -3,6 +3,5 @@ import { createUser } from "~/server/prisma"
 
 export default defineEventHandler(async (event) => {
     const body = await readBody(event) as User
-    
-    return createUser(body)
+    return await createUser(body)
 })
