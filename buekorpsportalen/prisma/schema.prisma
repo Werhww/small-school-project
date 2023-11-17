@@ -63,7 +63,7 @@ model Companie {
   id       Int       @id @default(autoincrement())
   name     String
   managerId   Int       @unique
-  manager     Manager      @relation(fields: [managerId], references: [id])
+  manager     Manager   @relation(fields: [managerId], references: [id])
   platoons Platoon[]
 }
 

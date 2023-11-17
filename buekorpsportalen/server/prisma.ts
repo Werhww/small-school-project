@@ -46,6 +46,20 @@ export function addUserMemberInfo(user:User, member:Member) {
     })
 }
 
+export function addUserManagerInfo(user:User, manager:Manager) {
+    return prisma.user.update({
+        where: {
+            id: user.id
+        },
+        data: {
+            manager: {
+                create: manager
+            }
+        }
+    })
+
+}
+
 export function addManagerToCompanie(manager:Manager, Companie:Companie) {
     return prisma.manager.update({
         where: {
