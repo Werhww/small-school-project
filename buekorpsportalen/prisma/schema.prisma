@@ -11,10 +11,10 @@ model User {
   id           Int       @id @default(autoincrement())
   password     String    @unique
   role         Role      @default(MEMBER)
-  companie     Companie?
+  manager    Manager?
   member       Member?
   parrent      Parrent?
-  personalInfo Personal?
+  personal Personal?
 }
 
 model Personal {
@@ -29,7 +29,7 @@ model Personal {
   city       String
   postalCode String
   userId     Int      @unique
-  user       User     @relation(fields: [userId], references: [id])
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("UserPersonal")
 }
@@ -37,7 +37,7 @@ model Personal {
 model Parrent {
   id       Int      @id @default(autoincrement())
   userId   Int      @unique
-  user     User     @relation(fields: [userId], references: [id])
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   childern Member[] @relation("MemberToParrent")
 
   @@map("UserParrent")
@@ -48,15 +48,22 @@ model Member {
   userId    Int       @unique
   platoonId Int
   platoon   Platoon   @relation(fields: [platoonId], references: [id])
-  user      User      @relation(fields: [userId], references: [id])
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   parrents  Parrent[] @relation("MemberToParrent")
+}
+
+model Manager {
+  id     Int    @id @default(autoincrement())
+  userId Int    @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  companie Companie?
 }
 
 model Companie {
   id       Int       @id @default(autoincrement())
   name     String
-  userId   Int       @unique
-  user     User      @relation(fields: [userId], references: [id])
+  managerId   Int       @unique
+  manager     Manager      @relation(fields: [managerId], references: [id])
   platoons Platoon[]
 }
 
@@ -65,7 +72,7 @@ model Platoon {
   name       String
   companieId Int
   members    Member[]
-  companie   Companie @relation(fields: [companieId], references: [id])
+  companie   Companie @relation(fields: [companieId], references: [id], onDelete: Cascade)
 }
 
 enum Role {
