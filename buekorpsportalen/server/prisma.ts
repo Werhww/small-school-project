@@ -15,10 +15,18 @@ export async function deleteUser(user:User) {
     })
 }
 
-export async function findUserById(userId:number) {
+export async function findUserByPassword(password:string) {
     return await prisma.user.findUnique({
         where: {
-            id: userId
+            password: password
+        }
+    })
+}
+
+export async function findUserByToken(token:string) {
+    return await prisma.user.findFirst({
+        where: {
+            token: token
         }
     })
 }
