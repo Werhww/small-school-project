@@ -3,17 +3,13 @@ const router = useRouter()
 const cookie = useCookie('token')
 
 router.beforeEach((to, from) => {
-    console.log('before each')
     if(cookie.value) {
-        console.log('cookie exists')
         router.push('/auth')
     }
 })
 
 onMounted(() => {
-    console.log('mounted')
     if(!cookie.value) {
-        console.log('cookie exists')
         router.push('/auth')
     }
 })

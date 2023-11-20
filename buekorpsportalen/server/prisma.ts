@@ -1,6 +1,10 @@
 import { PrismaClient, type User, type Personal, type Parrent, type Member, type Companie, type Manager } from '@prisma/client'
 const prisma = new PrismaClient()
 
+export async function allUsers() {
+    return await prisma.user.findMany()
+}
+
 export async function createUser(user:User) {
     return await prisma.user.create({
         data: user

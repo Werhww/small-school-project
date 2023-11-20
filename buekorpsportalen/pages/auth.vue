@@ -1,33 +1,28 @@
 <script setup lang="ts">
-import { Role } from '@prisma/client';
-
+const router = useRouter()
 const password = ref('')
-const newRole = ref<Role>(Role.MEMBER)
 
-async function createUser() {
-    const newUser = await useFetch('/api/user/auth', {
+function login() {
+    const user = useFetch('/api/user/auth', {
         method: 'POST',
         body: JSON.stringify({
             password: password.value,
         })
     })
-
-    userData.value = JSON.stringify(newUser.data.value)
+    
+    if(user.data.value) {
+        useCookie('token').value = user.data.value.token
+        router.push('/')
+    }
 }
-
-const userData = ref('')
 
 </script>
 
 <template>
 <div>
-    <p>test</p>
+    <p>login</p>
     <input type="text" v-model="password">
-    <select v-model="newRole">
-        <option v-for="value in Role" :value="value">{{ value }}</option>
-    </select>
-    <button @click="createUser">create user</button>
-    <p>{{ userData }}</p>
+    <button @click="login">user</button>
 </div>
 </template>
 
