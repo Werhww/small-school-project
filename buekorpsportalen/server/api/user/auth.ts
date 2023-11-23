@@ -4,5 +4,10 @@ import { sha256 } from "~/utils/utils"
 
 export default defineEventHandler(async (event) => {
     const body = await readBody(event) as User
-    return await findUserByPassword(sha256(body.password))
+    const userData = await findUserByPassword(sha256(body.password))
+
+    if(userData == null) return null
+    
+    setCookie(event, "token", userData.token)
+    return userData
 })
