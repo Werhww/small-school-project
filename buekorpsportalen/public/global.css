@@ -10,6 +10,8 @@ body, body * {
 body {
     background: var(--primary);
     padding: 2rem 4rem;
+
+    height: 93vh;
 }
 
 :root {
@@ -18,8 +20,8 @@ body {
     --contrast: #fff;
     --light: #B5B5B5;
 
-    --border: 1px solid var(--contrast);
-    --border-light: 1px solid var(--light);
+    --border: 2px solid var(--contrast);
+    --border-light: 2px solid var(--light);
 
     --box-height: 3.5rem;
 

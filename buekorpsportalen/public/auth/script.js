@@ -19,7 +19,7 @@ submitButton.addEventListener('click', async () => {
     const data = await res.json()
 
     if (data.success) {
-        window.location.href = '/'
+        window.location.href = '/dashboard'
     } else {
         errorMsg.dataset.show = true
         errorMsg.innerText = data.message
