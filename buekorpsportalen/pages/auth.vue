@@ -4,6 +4,7 @@ const disabled = ref(false)
 const password = ref('')
 
 const errorText = ref("")
+const role = inject(roleKey)
 
 async function login() {
     const user = await useFetch('/api/user/auth', {
@@ -15,6 +16,7 @@ async function login() {
     
     if(!user.data.value) return errorText.value = "Feil passord!"
 
+    role?.updateRole(user.data.value.role)
     router.push("/")
 }
 

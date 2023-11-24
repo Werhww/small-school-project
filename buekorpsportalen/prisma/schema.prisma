@@ -12,10 +12,10 @@ model User {
   password     String    @unique
   token        String    @default(uuid())
   role         Role      @default(MEMBER)
-  personal Personal?
+  personal     Personal?
   parrent      Parrent?
   member       Member?
-  manager    Manager?
+  manager      Manager?
 }
 
 model Personal {

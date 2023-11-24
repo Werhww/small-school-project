@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { Role } from '@prisma/client';
+
 const router = useRouter()
 const cookie = useCookie('token')
 
@@ -14,6 +16,15 @@ onMounted(() => {
     }
 })
 
+const role = ref<Role>("MEMBER")
+function updateRole(newRole: Role) {
+    role.value = newRole
+}
+
+provide(roleKey, {
+    role,
+    updateRole
+})
 </script>
 
 <template>
