@@ -10,10 +10,22 @@ router.beforeEach((to, from) => {
     }
 })
 
-onMounted(() => {
-    if(!cookie.value) {
+onMounted(async () => {
+    if(cookie.value == undefined || cookie.value == null) {
         router.push('/auth')
     }
+
+    const tokenCheck = await useFetch('/api/user/tokenAuth', {
+        method: 'POST',
+        body: JSON.stringify({
+            token: cookie.value
+        })
+    })
+
+    /* console.log(tokenCheck.data.value)
+    if (tokenCheck.data.value == null) {
+        router.push('/auth')
+    } */
 })
 
 const role = ref<Role>("MEMBER")
