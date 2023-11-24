@@ -1,0 +1,79 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           Int       @id @default(autoincrement())
+  password     String    @unique
+  token        String    @default(uuid())
+  role         Role      @default(MEMBER)
+  personal     Personal?
+  parrent      Parrent?
+  member       Member?
+  manager      Manager?
+}
+
+model Personal {
+  id         Int      @id @default(autoincrement())
+  firstName  String
+  lastName   String
+  birthDate  DateTime
+  email      String   @unique
+  phone      String   @unique
+  picture    Bytes?
+  address    String
+  city       String
+  postalCode String
+  userId     Int      @unique
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Parrent {
+  id       Int      @id @default(autoincrement())
+  userId   Int      @unique
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  childern Member[] @relation("MemberToParrent")
+} 
+model Member {
+  id        Int       @id @default(autoincrement())
+  userId    Int       @unique
+  platoonId Int
+  platoon   Platoon   @relation(fields: [platoonId], references: [id])
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  parrents  Parrent[] @relation("MemberToParrent")
+}
+
+model Manager {
+  id     Int    @id @default(autoincrement())
+  userId Int    @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  companie Companie?
+}
+
+model Companie {
+  id       Int       @id @default(autoincrement())
+  name     String
+  managerId   Int       @unique
+  manager     Manager   @relation(fields: [managerId], references: [id])
+  platoons Platoon[]
+}
+
+model Platoon {
+  id         Int      @id @default(autoincrement())
+  name       String
+  companieId Int
+  members    Member[]
+  companie   Companie @relation(fields: [companieId], references: [id], onDelete: Cascade)
+}
+
+enum Role {
+  ADMIN
+  MANAGER
+  MEMBER
+  PARRENT
+}

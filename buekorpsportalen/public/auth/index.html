@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../global.css">
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js" defer></script>
+
+    <title>Login</title>
+</head>
+<body>
+    <div class="wrapper" data-row data-align-center data-justify-center>
+        <div data-column data-big-gap>
+            <h1 data-bold>Login</h1>
+            <div>
+                <h5 data-error-text data-show="false" id="errorMsg">{{ errorText }}</h5>
+                <div class="input" data-w-icon data-shadow-hover data-width>
+                    <label for="password">
+                        <img src="../icons/key.svg" alt="icon">
+                    </label>
+                    <input type="text" id="password" placeholder="passord">
+                </div>
+                <p data-helper-text>Ingen konto? Kontakt <a href="/">her</a></p>
+            </div>
+    
+            <button class="button" data-shadow-hover data-width id="button">Login</button>
+        </div>    
+    
+        <img src="../illustrations/login.svg" alt="Nordnes illustrajons">
+    </div>
+</body>
+</html>
