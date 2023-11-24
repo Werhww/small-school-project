@@ -9,6 +9,7 @@ body, body * {
 
 body {
     background: var(--primary);
+    padding: 2rem 4rem;
 }
 
 :root {
