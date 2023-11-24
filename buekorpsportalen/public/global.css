@@ -146,6 +146,16 @@ p {
     font-weight: 400;
 }
 
+hr {
+    border: 0.1rem solid var(--light);
+    opacity: 0.2;
+}
+
+hr[data-short] {
+    width: 90%;
+    align-self: center;
+}
+
 /* Input with icon */
 .input[data-w-icon] {
     display: flex;

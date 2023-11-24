@@ -15,6 +15,17 @@ app.listen(3000, () => {
     console.log("http://localhost:3000");
 })
 
+app.get("/", (req, res) => {
+    const token = req.cookies.token
+
+    if (token) {
+        res.redirect("/dashboard");
+    } else {
+        res.redirect("/auth");
+    }
+})
+
+
 app.post("/api/auth", async (req, res) => {
     const { password } = req.body as User
     const hash = sha256(password);
