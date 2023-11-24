@@ -15,7 +15,6 @@ async function login() {
     
     if(!user.data.value) return errorText.value = "Feil passord!"
 
-    console.log(user.data.value)
     router.push("/")
 }
 
@@ -27,17 +26,17 @@ async function login() {
         <h1 data-bold>Login</h1>
         <div>
             <h5 data-error-text v-if="errorText">{{ errorText }}</h5>
-            <div class="input" data-w-icon data-shadow-hover>
+            <div class="input" data-w-icon data-shadow-hover data-width>
                 <label for="password">
                     <img src="/images/key.svg" alt="">
                 </label>
                 <input type="text" id="password" placeholder="passord" v-model="password" :disabled="disabled">
             </div>
-            <p data-helper-text>Ingen konto? Kontakt <RouterLink to="/">her</RouterLink></p>
+            <p data-helper-text>Ingen konto? Kontakt <NuxtLink to="/">her</NuxtLink></p>
         </div>
 
         
-        <button class="button" data-shadow-hover @click="login">Login</button>
+        <button class="button" data-shadow-hover @click="login" data-width>Login</button>
     </div>    
 
     <img src="/illustrations/login.svg" alt="">
@@ -64,5 +63,26 @@ async function login() {
         color: var(--secondary);
         padding-bottom: 0.2rem;
     }
+
+    *[data-width] {
+        max-width: 26.25rem;
+        min-width: 20rem;
+        width: 100%;
+    }
+
+    > img {
+        width: 100%;
+        min-width: 30rem;
+        max-width: 53.125rem;
+    }
+}
+
+@media screen and (max-width: 980px) {
+    .wrapper {
+        > img {
+            display: none;
+        }
+    }
+    
 }
 </style>

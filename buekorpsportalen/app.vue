@@ -136,6 +136,10 @@ body {
     &[data-big-gap] {
         gap: 3rem;
     }
+
+    &[data-grow] {
+        flex-grow: 1;
+    }
 }
 
 h1 {
@@ -174,7 +178,6 @@ p {
     align-items: center;
     justify-content: center;
     gap: 0.3rem;
-    padding: 0 0.3rem;
 
     transition: all 0.2s ease-in-out;
     
@@ -188,8 +191,12 @@ p {
         transition: all 0.2s ease-in-out;
         opacity: 0.6;
 
-        height: 2.5rem;
-        width: 2.5rem;
+        height: 3rem;
+        width: 3rem;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
 
         &:hover {
             cursor: pointer;
@@ -197,7 +204,6 @@ p {
     }
 
     img {
-
         height: 2.5rem;
         width: 2.5rem;
         object-fit: contain;

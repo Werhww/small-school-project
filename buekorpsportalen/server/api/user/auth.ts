@@ -8,6 +8,6 @@ export default defineEventHandler(async (event) => {
 
     if(userData == null) return null
     
-    setCookie(event, "token", userData.token)
+    setCookie(event, "token", userData.token, { maxAge: 60 * 60 * 24 * 7 })
     return userData
 })
