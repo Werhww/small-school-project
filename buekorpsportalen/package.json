@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "tsx watch index.ts"
+    "start": "cls && tsx watch index.ts"
   },
   "author": "",
   "license": "ISC",
