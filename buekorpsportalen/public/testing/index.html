@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="script.js" defer></script>
+    <title>Testing</title>
+</head>
+<body>
+    <form id="newUser">
+        <p>Add user</p>
+        <input type="text" name="password" placeholder="password">
+        <select name="role">
+            <option value="ADMIN">ADMIN</option>
+            <option value="MANAGER">MANAGER</option>
+            <option value="MEMBER">MEMBER</option>
+            <option value="PARRENT">PARRENT</option>
+        </select>
+        <button type="submit">Create</button>
+    </form>
+    <form id="newCompanie">
+        <p>Create Companie</p>
+        <input type="text" name="name" placeholder="name">
+        <input type="text" name="managerId" placeholder="managerId">
+        <button type="submit">Create</button>
+    </form>
+    <form id="newPlatoon">
+        <p>Create Platoon</p>
+        <input type="text" name="name"  placeholder="name">
+        <input type="text" name="companieId" placeholder="companieId">
+        <button type="submit">Create</button>
+    </form>
+    <form id="addUserToPlatoon">
+        <p>Add User to Platoon</p>
+        <input type="text" name="userId" placeholder="userId">
+        <input type="text" name="platoonId" placeholder="platoonId">
+        <button type="submit">Create</button>
+    </form>
+</body>
+</html>

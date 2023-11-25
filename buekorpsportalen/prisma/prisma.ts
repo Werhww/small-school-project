@@ -1,20 +1,39 @@
 import { PrismaClient, type User, type Personal, type Parrent, type Member, type Companie, type Manager } from '@prisma/client'
 const prisma = new PrismaClient()
 
-export async function allUsers() {
-    return await prisma.user.findMany()
-}
-
 export async function createUser(user:User) {
     return await prisma.user.create({
         data: user
     })
 }
 
-export async function deleteUser(user:User) {
-    return await prisma.user.delete({
+export async function createManager(userId:number) {
+    return await prisma.manager.create({
+        data: {
+            userId: userId
+        }
+    })
+}
+
+export async function createParrent(userId:number) {
+    return await prisma.parrent.create({
+        data: {
+            userId: userId
+        }
+    })
+}
+
+export async function addPlatoonToUser(userId:number, platoonId:number) {
+    return await prisma.user.update({
         where: {
-            id: user.id
+            id: userId
+        },
+        data: {
+            member: {
+                create: {
+                    platoonId: platoonId
+                }
+            }
         }
     })
 }
@@ -35,81 +54,23 @@ export async function findUserByToken(token:string) {
     })
 }
 
-export async function addPersonalToUser(personal:Personal) {
-    return await prisma.personal.create({
-        data: personal
-    })
-}
-
-export async function changePersonal(personal:Personal) {
-    return await prisma.personal.update({
+export async function findUserById(id:number) {
+    return await prisma.user.findUnique({
         where: {
-            id: personal.id
-        },
-        data: personal
-    })
-}
-
-export async function addParrentToUser(parrent:Parrent) {
-    return await prisma.parrent.create({
-        data: parrent
-    })
-}
-
-export async function addChildToParrent(parrent:Parrent, childId:number) {
-    return await prisma.parrent.update({
-        where: {
-            id: parrent.id
-        },
-        data: {
-            childern: {
-                connect: {
-                    id: childId
-                }
-            }
+            id: id
         }
     })
 }
 
-export async function addMemberToUser(member:Member) {
-    return await prisma.member.create({
-        data: member
-    })
-}
-
-export async function changeMember(member:Member) {
-    return await prisma.member.update({
+export async function findPlatoonByMembersToken(token:string) {
+    return await prisma.user.findFirst({
         where: {
-            id: member.id
+            token: token
         },
-        data: member
-    })
-}
-
-export async function addManagerToUser(manager:Manager) {
-    return await prisma.manager.create({
-        data: manager
-    })
-}
-
-export async function changeManager(manager:Manager) {
-    return await prisma.manager.update({
-        where: {
-            id: manager.id
-        },
-        data: manager
-    })
-}
-
-export async function addCompanieToUser(companieId:number, user:User) {
-    return await prisma.manager.update({
-        where: {
-            userId: user.id
-        },
-        data: {
-            companie: {
-                connect: {
-                    id: companieId
+        include: {
+            member: {
+                include: {
+                    platoon: true
                 }
             }
         }
@@ -121,13 +82,3 @@ export async function createCompanie(companie:Companie) {
         data: companie
     })
 }
-
-export async function changeCompanie(companie:Companie) {
-    return await prisma.companie.update({
-        where: {
-            id: companie.id
-        },
-        data: companie
-    })
-}
-
