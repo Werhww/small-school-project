@@ -2,11 +2,18 @@ const title = document.getElementById('title')
 const list = document.getElementById('list')
 
 
-async function fetchPlatoonMembers() {
-    const response = await fetch('/api/users')
+async function fetchPlatoonData() {
+    const response = await fetch('/api/platoon', {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
     const users = await response.json()
-    return users
+    console.log(users)
 }
+
+fetchPlatoonData()
 
 function renderUser(user) {
     const wrapper = document.createElement('div')

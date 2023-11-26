@@ -21,13 +21,18 @@
     <form id="newCompanie">
         <p>Create Companie</p>
         <input type="text" name="name" placeholder="name">
-        <input type="text" name="managerId" placeholder="managerId">
         <button type="submit">Create</button>
     </form>
     <form id="newPlatoon">
         <p>Create Platoon</p>
         <input type="text" name="name"  placeholder="name">
-        <input type="text" name="companieId" placeholder="companieId">
+        <input type="number" name="companieId" placeholder="companieId">
+        <button type="submit">Create</button>
+    </form>
+    <form id="addManagerToCompanie">
+        <p>Add Manager to Companie</p>
+        <input type="number" name="managerId" placeholder="managerId">
+        <input type="number" name="companieId" placeholder="companieId">
         <button type="submit">Create</button>
     </form>
     <form id="addUserToPlatoon">

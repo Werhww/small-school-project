@@ -52,14 +52,13 @@ model Manager {
   id     Int    @id @default(autoincrement())
   userId Int    @unique
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  companie Companie?
+  companies Companie[]
 }
 
 model Companie {
   id       Int       @id @default(autoincrement())
   name     String
-  managerId   Int       @unique
-  manager     Manager   @relation(fields: [managerId], references: [id])
+  managers  Manager[]
   platoons Platoon[]
 }
 

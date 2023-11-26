@@ -1,4 +1,4 @@
-import { PrismaClient, type User, type Personal, type Parrent, type Member, type Companie, type Manager } from '@prisma/client'
+import { PrismaClient, type User, type Personal, type Parrent, type Member, type Companie, type Manager, Platoon } from '@prisma/client'
 const prisma = new PrismaClient()
 
 export async function createUser(user:User) {
@@ -30,8 +30,13 @@ export async function addPlatoonToUser(userId:number, platoonId:number) {
         },
         data: {
             member: {
-                create: {
-                    platoonId: platoonId
+                connectOrCreate: {
+                    where: {
+                        userId: userId,
+                    },
+                    create: {
+                        platoonId: platoonId
+                    }
                 }
             }
         }
@@ -69,10 +74,49 @@ export async function findPlatoonByMembersToken(token:string) {
         },
         include: {
             member: {
-                include: {
-                    platoon: true
-                }
-            }
+                select: {
+                    platoon: {
+                        select: {
+                            name: true,
+                            members: {
+                                select: {
+                                    user: {
+                                        select: {
+                                            id: true,
+                                            personal: true
+                                        }
+                                    },
+                                    parrents: {
+                                        select: {
+                                            user: {
+                                                select: {
+                                                    id: true,
+                                                    personal: true
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                            companie: {
+                                select: {
+                                    managers: {
+                                        include: {
+                                            user: {
+                                                select: {
+                                                    id: true,
+                                                    personal: true
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+
+            },
         }
     })
 }
@@ -80,5 +124,36 @@ export async function findPlatoonByMembersToken(token:string) {
 export async function createCompanie(companie:Companie) {
     return await prisma.companie.create({
         data: companie
+    })
+}
+
+export async function findCompanieById(id:number) {
+    return await prisma.companie.findUnique({
+        where: {
+            id: id
+        }
+    })
+
+}
+
+export async function addManagerToCompanie(companieId:number, managerId:number) {
+    return await prisma.companie.update({
+        where: {
+            id: companieId
+        },
+        data: {
+            managers: {
+                connect: {
+                    id: managerId
+                }
+            }
+        }
+    })
+
+}
+
+export async function createPlatoon(platoon:Platoon) {
+    return await prisma.platoon.create({
+        data: platoon
     })
 }
