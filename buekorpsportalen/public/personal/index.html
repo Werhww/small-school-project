@@ -5,19 +5,50 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../global.css">
     <link rel="stylesheet" href="style.css">
+
+    <script src="script.js" defer></script>
     <title>Personal</title>
 </head>
-<body data-column data-big-gap>
-    <h1 data-bold id="title">Personal</h1>
-    <div data-column data-medium-gap>
-        <div data-column data-gap>
-            <h4 data-bold>Personinfo</h4>
+<body>
+    <form id="personalInfoForm" data-column data-big-gap>
+        <h1 data-bold id="title">Personal</h1>
+        <div data-column data-medium-gap>
+            <div data-column data-gap>
+                <h4 data-bold>Personinfo</h4>
+                <div class="personal" data-row data-medium-gap>
+                    <input type="text" name="firstName" placeholder="fornavn" data-normal>
+                    <input type="text" name="lastName" placeholder="etternavn" data-normal>
+                    <input type="date" name="birthDate" placeholder="fødselsdag" data-normal>
+                </div>
+            </div>
             <div data-row data-medium-gap>
-                <input type="text" placeholder="fornavn" data-normal>
-                <input type="text" placeholder="etternavn" data-normal>
-                <input type="date" placeholder="fødselsdag" data-normal>
+                <div data-column data-medium-gap data-flex>
+                    <div data-column data-gap>
+                        <h4 data-bold>Kontaktinfo</h4>
+                        <div class="contact" data-row data-medium-gap>
+                            <input type="text" name="email" placeholder="epost" data-normal>
+                            <input type="text" name="phone" placeholder="telefon" data-normal>
+                        </div>
+                    </div>
+                    <div data-column data-gap>
+                        <h4 data-bold>Adresse</h4>
+                        <div class="adress" data-row data-medium-gap>
+                            <input type="text" name="address" placeholder="adresse" data-normal>
+                            <input type="text" name="city" placeholder="by" data-normal>
+                            <input type="number" name="postalCode" placeholder="postnummer" data-normal>
+                        </div>
+                    </div>
+                </div>
+                <div class="profilePic">
+                    <label for="profilePic">
+                        <img src="../icons/user.svg" alt="profilePic" id="profilePicPreview" data-image="false">
+                        <img src="../icons/plussCircle.svg" alt="pluss icon" class="plussIcon">                
+                    </label>
+                    <input type="file" accept="image/*" name="profilePic" id="profilePic" hidden>
+                </div>
             </div>
         </div>
-    </div>
+        <button class="button saveButton" type="submit">Lagre</button>
+    </form>
 </body>
 </html> 

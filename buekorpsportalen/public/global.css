@@ -224,19 +224,11 @@ hr[data-short] {
     border: var(--border);
 }
 
-.input[data-w-icon]:has(input:not(:placeholder-shown)) {
-    border: var(--border);
-}
-
 .input[data-w-icon]:has(input:focus) > label {
     opacity: 1;
 }
 
-.input[data-w-icon]:has(input:not(:placeholder-shown)) > label {
-    opacity: 1;
-}
-
-
+/* Input */
 input[data-transparent] {
     font-size: 1.5rem;
     color: var(--accent);
@@ -272,16 +264,23 @@ input[data-normal]::placeholder {
     color: var(--light);
 }
 
-input[data-normal]:not(:placeholder-shown)  {
-    border: var(--border);
-}
-
+/* Input date */
 input[type="date"]::-webkit-calendar-picker-indicator {
     filter: brightness(0) saturate(100%) invert(84%) sepia(0%) saturate(1%) hue-rotate(167deg) brightness(89%) contrast(85%);
 }
 
 input[type="date"]:focus ::-webkit-calendar-picker-indicator {
     filter: invert(1);
+}
+
+input[type="date"]:invalid {
+    border: solid 2px var(--secondary);
+}
+
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
 }
 
 /* Button */
