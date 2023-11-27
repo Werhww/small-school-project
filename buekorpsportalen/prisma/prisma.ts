@@ -72,7 +72,7 @@ export async function findPlatoonByMembersToken(token:string) {
         where: {
             token: token
         },
-        include: {
+        select: {
             member: {
                 select: {
                     platoon: {
@@ -117,6 +117,53 @@ export async function findPlatoonByMembersToken(token:string) {
                 },
 
             },
+        }
+    })
+}
+
+export async function findPlatoonById(id:number) {
+    return await prisma.platoon.findUnique({
+        where: {
+            id: id
+        },
+        select: {
+            name: true,
+            companieId: true,
+            members: {
+                select: {
+                    user: {
+                        select: {
+                            id: true,
+                            personal: true
+                        }
+                    },
+                    parrents: {
+                        select: {
+                            user: {
+                                select: {
+                                    id: true,
+                                    personal: true
+                                }
+                            }
+                        }
+                    }
+                
+                }
+            },
+            companie: {
+                select: {
+                    managers: {
+                        select: {
+                            user: {
+                                select: {
+                                    id: true,
+                                    personal: true
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     })
 }

@@ -3,7 +3,7 @@ const list = document.getElementById('list')
 
 
 async function fetchPlatoonData() {
-    const response = await fetch('/api/platoon', {
+    const response = await fetch('/api/platoon/token', {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json'

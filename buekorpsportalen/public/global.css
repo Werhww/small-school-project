@@ -99,6 +99,10 @@ body {
     gap: 0.5rem;
 }
 
+*[data-medium-gap] {
+    gap: 1.5rem;
+}
+
 *[data-big-gap] {
     gap: 3rem;
 }
@@ -236,16 +240,49 @@ hr[data-short] {
 input[data-transparent] {
     font-size: 1.5rem;
     color: var(--accent);
-
-    *::placeholder {
-        color: var(--light);
-    }
 }
 
-input[data-transparent] ::placeholder {
+input[data-transparent]::placeholder {
     color: var(--light);
 }
 
+input[data-normal] {
+    transition: all 0.2s ease-in-out;
+
+    font-size: 1.5rem;
+    color: var(--light);
+
+    background: transparent;
+    outline: none;
+
+    padding: 0 1rem;
+    
+    width: 100%;
+    height: var(--box-height);
+    border: var(--border-light);
+    border-radius: var(--border-radius);
+}
+
+input[data-normal]:focus  {
+    color: var(--contrast);
+    border: var(--border);
+}
+
+input[data-normal]::placeholder {
+    color: var(--light);
+}
+
+input[data-normal]:not(:placeholder-shown)  {
+    border: var(--border);
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: brightness(0) saturate(100%) invert(84%) sepia(0%) saturate(1%) hue-rotate(167deg) brightness(89%) contrast(85%);
+}
+
+input[type="date"]:focus ::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+}
 
 /* Button */
 .button {

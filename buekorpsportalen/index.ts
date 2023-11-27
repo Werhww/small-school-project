@@ -3,7 +3,7 @@ import { join } from "path"
 import { sha256 } from "./utils";
 import cookieParser from "cookie-parser";
 import { $Enums, Companie, Platoon, User } from "@prisma/client";
-import { addManagerToCompanie, addPlatoonToUser, createCompanie, createManager, createParrent, createPlatoon, createUser, findCompanieById, findPlatoonByMembersToken, findUserById, findUserByPassword } from "./prisma/prisma";
+import { addManagerToCompanie, addPlatoonToUser, createCompanie, createManager, createParrent, createPlatoon, createUser, findCompanieById, findPlatoonById, findPlatoonByMembersToken, findUserById, findUserByPassword, findUserByToken } from "./prisma/prisma";
 
 const app = express();
 
@@ -87,7 +87,7 @@ app.post("/api/companie/create", async (req, res) => {
     const body = req.body as Companie
 
     const companie = await createCompanie(body);
-    res.json({ success: true, message: "Kompaniet ble opprettet.", companie });
+    res.json({ success: true, message: "Kompaniet ble opprettet.", data: { companie } });
 })
 
 app.post("/api/companie/manager/add", async (req, res) => {
@@ -109,17 +109,46 @@ app.post("/api/platoon/create", async (req, res) => {
     res.json({ success: true, message: "Palaton ble opprettet." });
 })
 
-app.get("/api/platoon", async (req, res) => {
+app.get("/api/platoon/token", async (req, res) => { 
     const token = req.cookies.token
+    const user = await findUserByToken(token)
+
+    if(user == null || user.role !== $Enums.Role.MEMBER) {
+        res.json({ success: false, message: "Bruker er ikke medlem." });
+        return
+    }
 
     const userWithPlatoon = await findPlatoonByMembersToken(token);
     
-    if(userWithPlatoon?.role === $Enums.Role.MEMBER) {
+    if(userWithPlatoon) {
         res.json({
             success: true,
-            name: userWithPlatoon.member?.platoon.name,
-            membersWithParrents: userWithPlatoon.member?.platoon.members,
-            managers: userWithPlatoon.member?.platoon.companie.managers
+            data: {
+                name: userWithPlatoon.member?.platoon.name,
+                membersWithParrents: userWithPlatoon.member?.platoon.members,
+                managers: userWithPlatoon.member?.platoon.companie.managers 
+            }
+        })
+    } else {
+        res.json({ success: false, message: "Palaton ble ikke funnet." });
+    }
+
+})
+
+app.get("/api/platoon/id", async (req, res) => {
+    const { platoonId } = req.body
+
+    const platoon = await findPlatoonById(platoonId);
+    
+    if(platoon) {
+        res.json({ 
+            success: true, 
+            data: {
+                name: platoon.name,
+                companieId: platoon.companieId,
+                managers: platoon.companie.managers,
+                membersWithParrents: platoon.members,
+            }
         });
     } else {
         res.json({ success: false, message: "Palaton ble ikke funnet." });
