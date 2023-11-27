@@ -9,39 +9,57 @@ async function fetchPlatoonData() {
             'Content-Type': 'application/json'
         }
     })
-    const users = await response.json()
-    console.log(users)
+    const platoon = await response.json()
+    const members = platoon.data.membersWithParrents
+    const managers = platoon.data.managers
+    
+    members.forEach(member => {
+        renderUser(member.user)
+    })
 }
 
 fetchPlatoonData()
 
 function renderUser(user) {
+    console.log("new user render ", user.id)
+    const time = new Date()
+
+    const personalData = user.personal
+
     const wrapper = document.createElement('div')
+    wrapper.classList.add('rowInfo')
+    wrapper.dataset.row = ""
+    wrapper.dataset.alignCenter = ""
 
-    const imageWrapper = document.createElement('div')
-    imageWrapper.classList.add('rowItem')
-    imageWrapper.dataset.small = ""
+    const pictureWrapper = document.createElement('div')
+    pictureWrapper.classList.add('rowItem')
+    pictureWrapper.classList.add('rowPic')
+    pictureWrapper.dataset.small = ""
 
-    const image = document.createElement('img')
-    image.src = '../icons/user.svg'
-    if (user.image) image.src = user.image
+    const picture = document.createElement('img')
+    picture.src = '../icons/user.svg'
+    if (personalData.picture) {
+        const bytes = personalData.picture.data
+        picture.src = convertBytesToDataURL(bytes)
+    }
+    pictureWrapper.appendChild(picture)
 
     const name = document.createElement('p')
     name.classList.add('rowItem')
     name.dataset.big = ""
-    name.innerText = user.name
+    name.innerText = `${personalData.firstName} ${personalData.lastName}`
 
     const phone = document.createElement('a')
     phone.classList.add('rowItem')
     phone.dataset.medium = ""
-    phone.innerText = user.phone
-    phone.href = `tel:${user.phone}`
+    phone.innerText = personalData.phone
+    phone.href = `tel:${personalData.phone}`
 
     const email = document.createElement('a')
     email.classList.add('rowItem')
     email.dataset.big = ""
-    email.innerText = user.email
-    email.href = `mailto:${user.email}`
+    email.innerText = personalData.email
+    email.href = `mailto:${personalData.email}`
     
 
     const parrentWrapper = document.createElement('div')
@@ -50,5 +68,22 @@ function renderUser(user) {
     parrentWrapper.dataset.big = ""
     parrentWrapper.dataset.column = ""
 
-    
+    /* add parrent creation code */ 
+
+
+    wrapper.appendChild(pictureWrapper)
+    wrapper.appendChild(name)
+    wrapper.appendChild(phone)
+    wrapper.appendChild(email)
+    wrapper.appendChild(parrentWrapper)
+
+    document.getElementById('list').appendChild(wrapper)
+    console.log("render finished, time " + (new Date() - time) + "ms")
+}
+
+function convertBytesToDataURL(bytes) {
+    const uint8Array = new Uint8Array(bytes);
+    const blob = new Blob([uint8Array]);
+    const dataUrl = URL.createObjectURL(blob);
+    return dataUrl;
 }

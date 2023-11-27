@@ -1,16 +1,18 @@
 import express from "express"
+import multer from "multer";
 import { join } from "path"
 import { sha256 } from "./utils";
 import cookieParser from "cookie-parser";
-import { $Enums, Companie, Platoon, User } from "@prisma/client";
-import { addManagerToCompanie, addPlatoonToUser, createCompanie, createManager, createParrent, createPlatoon, createUser, findCompanieById, findPlatoonById, findPlatoonByMembersToken, findUserById, findUserByPassword, findUserByToken } from "./prisma/prisma";
+import { $Enums, Companie, Personal, Platoon, User } from "@prisma/client";
+import { addImageToUser, addManagerToCompanie, addPersonalToUser, addPlatoonToUser, createCompanie, createManager, createParrent, createPlatoon, createUser, findCompanieById, findPlatoonById, findPlatoonByMembersToken, findUserById, findUserByPassword, findUserByToken } from "./prisma/prisma";
 
-const app = express();
+const app = express()
+const upload = multer()
 
-app.use(express.json());
+app.use(express.json({ limit: "50mb" }))
 app.use(express.static(join(__dirname, "public")));
 app.use(cookieParser());
-
+ 
 app.listen(3000, () => {
     console.log("http://localhost:3000");
 })
@@ -77,6 +79,36 @@ app.post("/api/user/connectToPlatoon", async (req, res) => {
         }
 
         await addPlatoonToUser(userId, platoonId);
+        res.json({ success: true, message: "Brukeren ble oppdatert." });
+    } else {
+        res.json({ success: false, message: "Brukeren eksisterer ikke." });
+    }
+}) 
+
+app.post("/api/user/addPersonal", async (req, res) => {
+    const body = req.body as Personal
+    const token = req.cookies.token
+    const user = await findUserByToken(token);
+
+    if (user) {
+        await addPersonalToUser(user.id, body);
+        res.json({ success: true, message: "Brukeren ble oppdatert." });
+    } else {
+        res.json({ success: false, message: "Brukeren eksisterer ikke." });
+    }
+})
+
+app.post("/api/user/addImage", upload.single('picture'), async (req, res) => {
+    const buffer = req.file?.buffer
+    const token = req.cookies.token
+    const user = await findUserByToken(token);
+
+    if (user) {
+        if(!buffer) {
+            res.json({ success: false, message: "Bilde ble ikke funnet." });
+            return
+        }
+        await addImageToUser(user.id, buffer)
         res.json({ success: true, message: "Brukeren ble oppdatert." });
     } else {
         res.json({ success: false, message: "Brukeren eksisterer ikke." });

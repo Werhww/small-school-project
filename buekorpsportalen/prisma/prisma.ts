@@ -43,6 +43,36 @@ export async function addPlatoonToUser(userId:number, platoonId:number) {
     })
 }
 
+export async function addPersonalToUser(userId:number, personal:Personal) {
+    return await prisma.user.update({
+        where: {
+            id: userId
+        },
+        data: {
+            personal: {
+                create: personal
+            }
+        }
+    })
+
+}
+
+export async function addImageToUser(userId:number, picture:Buffer) {
+    return await prisma.user.update({
+        where: {
+            id: userId
+        },
+        data: {
+            personal: {
+                update: {
+                    picture: picture
+                }
+            }
+        }
+    })
+
+}
+
 export async function findUserByPassword(password:string) {
     return await prisma.user.findUnique({
         where: {

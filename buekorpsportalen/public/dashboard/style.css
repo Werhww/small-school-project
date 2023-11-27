@@ -107,6 +107,17 @@
     width: 13rem;
 }
 
+.rowPic {
+    border-radius: 50%;
+    overflow: hidden;
+}
+
+.rowPic img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
 .parrents p {
     text-decoration: underline;
 }
