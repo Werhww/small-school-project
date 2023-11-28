@@ -1,5 +1,29 @@
+const folder = document.getElementById('folder')
+
+const memberOption = document.getElementById('memberOption')
+const memberSlide = document.getElementById('memberSlide')
+memberOption.addEventListener('click', () => {
+    folder.scrollLeft = memberSlide.offsetLeft - 66
+
+})
+
+
+const managerOption = document.getElementById('managerOption')
+const managerSlide = document.getElementById('managerSlide')
+managerOption.addEventListener('click', () => {
+    folder.scrollLeft = managerSlide.offsetLeft - 64
+
+})
+
+const parrentOption = document.getElementById('parrentOption')
+const parrentSlide = document.getElementById('parrentSlide')
+parrentOption.addEventListener('click', () => {
+    folder.scrollLeft = parrentSlide.offsetLeft - 64
+
+})
+
 const title = document.getElementById('title')
-const list = document.getElementById('list')
+const userList = document.getElementById('userList')
 
 
 async function fetchPlatoonData() {
@@ -10,11 +34,14 @@ async function fetchPlatoonData() {
         }
     })
     const platoon = await response.json()
+
     const members = platoon.data.membersWithParrents
     const managers = platoon.data.managers
     
+
     members.forEach(member => {
         renderUser(member.user)
+
     })
 }
 
@@ -77,7 +104,7 @@ function renderUser(user) {
     wrapper.appendChild(email)
     wrapper.appendChild(parrentWrapper)
 
-    document.getElementById('list').appendChild(wrapper)
+    userList.appendChild(wrapper)
     console.log("render finished, time " + (new Date() - time) + "ms")
 }
 

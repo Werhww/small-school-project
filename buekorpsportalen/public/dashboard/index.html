@@ -13,33 +13,85 @@
     <h1 data-bold id="title">Peletong hvit</h1>
     <div data-flex data-column>
         <div data-row data-space-between class="listOptions">
-            <p data-active="true">Medlem</p>
-            <p>Ledelse</p>
-            <p>Foreldre</p>
+            <p id="memberOption" data-active="true">Medlem</p>
+            <p id="managerOption">Ledelse</p>
+            <p id="parrentOption">Foreldre</p>
         </div>
-        <div data-column data-flex class="userList">
-            <div data-row class="rowInfo">
-                <h5 class="rowItem" data-info data-small>Bilde</h5>
-                <h5 class="rowItem" data-info data-big>Navn</h5>
-                <h5 class="rowItem" data-info data-medium>Telefon</h5>
-                <h5 class="rowItem" data-info data-big>Epost</h5>
-                <h5 class="rowItem" data-info data-big>Foreldre</h5>
-            </div>
-            <div data-column class="list" id="list">
-                <div data-row data-align-center class="rowInfo">
-                    <div class="rowItem rowPic" data-small>
-                        <img src="../icons/user.svg" alt="">
-                    </div>
-                    <p class="rowItem" data-big>Leo Walbeck Kleppe</p>
-                    <p class="rowItem" data-medium>94204248</p>
-                    <p class="rowItem" data-big>leo.walbeck@gmail.com</p>
-                    <div class="rowItem parrents"  data-big data-column>
-                        <p>Jostein kleppe</p>
-                        <p>Ina Walbeck sørensen</p>
-                    </div>
+        <div data-row class="folder" id="folder">
+            <div data-column data-flex class="slide" id="memberSlide">
+                <div data-row class="rowInfo">
+                    <h5 class="rowItem" data-info data-small>Bilde</h5>
+                    <h5 class="rowItem" data-info data-big>Navn</h5>
+                    <h5 class="rowItem" data-info data-medium>Telefon</h5>
+                    <h5 class="rowItem" data-info data-big>Epost</h5>
+                    <h5 class="rowItem" data-info data-big>Foreldre</h5>
                 </div>
-                <hr data-short>
-                
+                <div data-column class="list" id="userList">
+                    <div data-row data-align-center class="rowInfo">
+                        <div class="rowItem rowPic" data-small>
+                            <img src="../icons/user.svg" alt="">
+                        </div>
+                        <p class="rowItem" data-big>Leo Walbeck Kleppe</p>
+                        <p class="rowItem" data-medium>94204248</p>
+                        <p class="rowItem" data-big>leo.walbeck@gmail.com</p>
+                        <div class="rowItem parrents"  data-big data-column>
+                            <p>Jostein kleppe</p>
+                            <p>Ina Walbeck sørensen</p>
+                        </div>
+                    </div>
+                    <hr data-short>
+                    
+                </div>
+            </div>
+            <div data-column data-flex class="slide" id="managerSlide">
+                <div data-row class="rowInfo">
+                    <h5 class="rowItem" data-info data-small>Bilde</h5>
+                    <h5 class="rowItem" data-info data-big>Navn</h5>
+                    <h5 class="rowItem" data-info data-medium>Telefon</h5>
+                    <h5 class="rowItem" data-info data-big>Epost</h5>
+                    <h5 class="rowItem" data-info data-big></h5>
+                </div>
+                <div data-column class="list" id="managerList">
+                    <div data-row data-align-center class="rowInfo">
+                        <div class="rowItem rowPic" data-small>
+                            <img src="../icons/user.svg" alt="">
+                        </div>
+                        <p class="rowItem" data-big>Leo Walbeck Kleppe</p>
+                        <p class="rowItem" data-medium>94204248</p>
+                        <p class="rowItem" data-big>leo.walbeck@gmail.com</p>
+                        <div class="rowItem parrents"  data-big data-column>
+                            <p>Jostein kleppe</p>
+                            <p>Ina Walbeck sørensen</p>
+                        </div>
+                    </div>
+                    <hr data-short>
+                    
+                </div>
+            </div>
+            <div data-column data-flex class="slide" id="parrentSlide">
+                <div data-row class="rowInfo">
+                    <h5 class="rowItem" data-info data-small>Bilde</h5>
+                    <h5 class="rowItem" data-info data-big>Navn</h5>
+                    <h5 class="rowItem" data-info data-medium>Telefon</h5>
+                    <h5 class="rowItem" data-info data-big>Epost</h5>
+                    <h5 class="rowItem" data-info data-big>Barn</h5>
+                </div>
+                <div data-column class="list" id="parrentList">
+                    <div data-row data-align-center class="rowInfo">
+                        <div class="rowItem rowPic" data-small>
+                            <img src="../icons/user.svg" alt="">
+                        </div>
+                        <p class="rowItem" data-big>Leo Walbeck Kleppe</p>
+                        <p class="rowItem" data-medium>94204248</p>
+                        <p class="rowItem" data-big>leo.walbeck@gmail.com</p>
+                        <div class="rowItem parrents"  data-big data-column>
+                            <p>Jostein kleppe</p>
+                            <p>Ina Walbeck sørensen</p>
+                        </div>
+                    </div>
+                    <hr data-short>
+                    
+                </div>
             </div>
         </div>
     </div>

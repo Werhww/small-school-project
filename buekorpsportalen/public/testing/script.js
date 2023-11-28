@@ -4,7 +4,7 @@ newUserForm.addEventListener('submit', async (e) => {
     e.preventDefault()
 
     const form  = new FormData(newUserForm)
-    const data = Object.fromEntries(form.entries())
+    const data = Object.from|Entries(form.entries())
 
     const res = await fetch('/api/user/create', {
         method: 'POST',

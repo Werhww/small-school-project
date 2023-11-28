@@ -1,5 +1,5 @@
 import express from "express"
-import multer from "multer";
+import multer from "multer"
 import { join } from "path"
 import { sha256 } from "./utils";
 import cookieParser from "cookie-parser";
