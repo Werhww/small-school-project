@@ -4,7 +4,7 @@ newUserForm.addEventListener('submit', async (e) => {
     e.preventDefault()
 
     const form  = new FormData(newUserForm)
-    const data = Object.from|Entries(form.entries())
+    const data = Object.fromEntries(form.entries())
 
     const res = await fetch('/api/user/create', {
         method: 'POST',
@@ -94,6 +94,28 @@ addUserToPlatoonForm.addEventListener('submit', async (e) => {
         body: JSON.stringify({
             userId: Number(data.userId),
             platoonId: Number(data.platoonId)
+        })
+    })
+
+    const json = await res.json()
+    console.log(json)
+    newCompanieForm.reset()
+})
+
+const addParrentToUser = document.getElementById('addParrentToUser');
+
+addParrentToUser.addEventListener('submit', async (e) => {
+    e.preventDefault() 
+
+    const form  = new FormData(addParrentToUser)
+    const data = Object.fromEntries(form.entries())
+    console.log(data) 
+    const res = await fetch('/api/user/connectToParrent', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            userId: Number(data.userId),
+            parrentId: Number(data.parrentId)
         })
     })
 

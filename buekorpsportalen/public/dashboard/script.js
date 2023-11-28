@@ -1,30 +1,40 @@
 const folder = document.getElementById('folder')
+const folderOptions = {
+    members: document.getElementById('memberOption'),
+    managers: document.getElementById('managerOption'),
+    parrents: document.getElementById('parrentOption')
+}
 
-const memberOption = document.getElementById('memberOption')
-const memberSlide = document.getElementById('memberSlide')
-memberOption.addEventListener('click', () => {
-    folder.scrollLeft = memberSlide.offsetLeft - 66
+const folderSlides = {
+    members: document.getElementById('memberSlide'),
+    managers: document.getElementById('managerSlide'),
+    parrents: document.getElementById('parrentSlide')
+}
 
-})
+function clearActive() {
+    for (const option in folderOptions) {
+        folderOptions[option].dataset.active = ""
+    }
+}
 
+function updateActive(key) {
+    clearActive()
+    folderOptions[key].dataset.active = "true"
+}
 
-const managerOption = document.getElementById('managerOption')
-const managerSlide = document.getElementById('managerSlide')
-managerOption.addEventListener('click', () => {
-    folder.scrollLeft = managerSlide.offsetLeft - 64
+function listOptionEventListeners(key) {
+    folderOptions[key].addEventListener('click', () => {
+        folderSlides[key].scrollIntoView()
+        updateActive(key)
+    })
+}
 
-})
-
-const parrentOption = document.getElementById('parrentOption')
-const parrentSlide = document.getElementById('parrentSlide')
-parrentOption.addEventListener('click', () => {
-    folder.scrollLeft = parrentSlide.offsetLeft - 64
-
-})
+for (const option in folderOptions) {
+    listOptionEventListeners(option)
+}
 
 const title = document.getElementById('title')
 const userList = document.getElementById('userList')
-
 
 async function fetchPlatoonData() {
     const response = await fetch('/api/platoon/token', {
@@ -34,20 +44,47 @@ async function fetchPlatoonData() {
         }
     })
     const platoon = await response.json()
+    if (platoon.success == false) {
+        window.location.href = "/testing"
+    }
+
+    title.innerText = `Peletong ${platoon.data.name}`
 
     const members = platoon.data.membersWithParrents
     const managers = platoon.data.managers
     
 
     members.forEach(member => {
-        renderUser(member.user)
+        renderUser(member.user, "memberList", member.parrents, "parrents")
+        console.log(member)
+        member.parrents.forEach(parrent => {
 
+
+            const parrentWrapper = document.getElementById("wrapper" + parrent.user.personal.phone)
+            if (parrentWrapper) {
+                addLinkTo(
+                    member.user.personal?.firstName, 
+                    member.user.personal?.lastName, 
+                    member.user.personal?.phone, 
+                    "members",
+                    parrent.user.personal?.phone + "LinkTo" 
+                )
+                return
+            }
+
+            renderUser(parrent.user, "parrentList", [member], "members")
+        })
+    })
+
+
+    managers.forEach(manager => {
+        renderUser(manager.user, "managerList")
     })
 }
 
 fetchPlatoonData()
 
-function renderUser(user) {
+function renderUser(user, listId, linkTo = null, linkToListName = null) {
     console.log("new user render ", user.id)
     const time = new Date()
 
@@ -57,6 +94,7 @@ function renderUser(user) {
     wrapper.classList.add('rowInfo')
     wrapper.dataset.row = ""
     wrapper.dataset.alignCenter = ""
+    wrapper.id = "wrapper" + personalData?.phone
 
     const pictureWrapper = document.createElement('div')
     pictureWrapper.classList.add('rowItem')
@@ -65,7 +103,7 @@ function renderUser(user) {
 
     const picture = document.createElement('img')
     picture.src = '../icons/user.svg'
-    if (personalData.picture) {
+    if (personalData?.picture) {
         const bytes = personalData.picture.data
         picture.src = convertBytesToDataURL(bytes)
     }
@@ -74,19 +112,19 @@ function renderUser(user) {
     const name = document.createElement('p')
     name.classList.add('rowItem')
     name.dataset.big = ""
-    name.innerText = `${personalData.firstName} ${personalData.lastName}`
+    name.innerText = `${personalData?.firstName} ${personalData?.lastName}`
 
-    const phone = document.createElement('a')
+    const phone = document.createElement('p')
     phone.classList.add('rowItem')
     phone.dataset.medium = ""
-    phone.innerText = personalData.phone
-    phone.href = `tel:${personalData.phone}`
+    phone.innerText = personalData?.phone
+    phone.href = `tel:${personalData?.phone}`
 
-    const email = document.createElement('a')
+    const email = document.createElement('p')
     email.classList.add('rowItem')
     email.dataset.big = ""
-    email.innerText = personalData.email
-    email.href = `mailto:${personalData.email}`
+    email.innerText = personalData?.email
+    email.href = `mailto:${personalData?.email}`
     
 
     const parrentWrapper = document.createElement('div')
@@ -94,9 +132,21 @@ function renderUser(user) {
     parrentWrapper.classList.add('parrents')
     parrentWrapper.dataset.big = ""
     parrentWrapper.dataset.column = ""
+    parrentWrapper.id = personalData?.phone + "LinkTo"
+    
+    if (linkTo) {
+        linkTo.forEach(parrent => {
+            const parrentLink = addLinkTo(
+                parrent.user.personal?.firstName, 
+                parrent.user.personal?.lastName, 
+                parrent.user.personal?.phone, 
+                linkToListName
+            )
+            parrentWrapper.appendChild(parrentLink)
+        })
+    }
 
     /* add parrent creation code */ 
-
 
     wrapper.appendChild(pictureWrapper)
     wrapper.appendChild(name)
@@ -104,8 +154,54 @@ function renderUser(user) {
     wrapper.appendChild(email)
     wrapper.appendChild(parrentWrapper)
 
-    userList.appendChild(wrapper)
+    const hr = document.createElement('hr')
+    hr.dataset.short = ""
+
+    document.getElementById(listId).appendChild(wrapper)
+    document.getElementById(listId).appendChild(hr)
     console.log("render finished, time " + (new Date() - time) + "ms")
+}
+
+function addLinkTo(firstName, lastName, phone, listName, wrapperId = null) {
+    const parrentLink = document.createElement('p')
+    parrentLink.innerText = `${firstName} ${lastName}`
+
+    parrentLink.addEventListener('click', () => {
+        const link = document.getElementById("wrapper" + phone)
+        link.scrollIntoView({ behavior: 'smooth', block: 'start'})
+        updateActive(listName)
+
+        let scrollInterval = null
+
+        function highlight() {
+            clearInterval(scrollInterval)
+            link.classList.add('highlight')
+            setTimeout(() => {
+                link.classList.remove('highlight')
+            }, 500) 
+        }
+
+        setTimeout(() => {
+            scrollInterval = setInterval(() => {
+                const scrollWidth = (folder.scrollWidth - folder.clientWidth) / 2
+                if (folder.scrollLeft < 60) {
+                    console.log("scroll left")
+                    highlight()
+                    return
+                } else if (folder.scrollLeft > scrollWidth) {
+                    console.log("scroll right")
+                    highlight() 
+                    return
+                }
+            })
+        }, 300)
+        
+    })
+
+    if(wrapperId) {
+        document.getElementById(wrapperId).appendChild(parrentLink)
+    }
+    return parrentLink
 }
 
 function convertBytesToDataURL(bytes) {

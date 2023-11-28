@@ -57,6 +57,15 @@ export async function addPersonalToUser(userId:number, personal:Personal) {
 
 }
 
+export async function findPersonalByUserId(userId:number) {
+    return await prisma.personal.findFirst({
+        where: {
+            userId: userId
+        }
+    })
+
+}
+
 export async function addImageToUser(userId:number, picture:Buffer) {
     return await prisma.user.update({
         where: {
@@ -66,6 +75,26 @@ export async function addImageToUser(userId:number, picture:Buffer) {
             personal: {
                 update: {
                     picture: picture
+                }
+            }
+        }
+    })
+
+}
+
+export async function addParrentToUser(userId:number, parrentId:number) {
+    return await prisma.user.update({
+        where: {
+            id: userId
+        },
+        data: {
+            member: {
+                update: {
+                    parrents: {
+                        connect: {
+                            id: parrentId
+                        }
+                    }
                 }
             }
         }
@@ -121,7 +150,7 @@ export async function findPlatoonByMembersToken(token:string) {
                                             user: {
                                                 select: {
                                                     id: true,
-                                                    personal: true
+                                                    personal: true,
                                                 }
                                             }
                                         }

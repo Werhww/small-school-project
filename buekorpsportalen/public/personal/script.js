@@ -42,7 +42,7 @@ personalInfoForm.addEventListener('submit',async (e) => {
         fields[i].disabled = true
     }
 
-    /* const response = await fetch('/api/user/addPersonal', {
+    const response = await fetch('/api/user/addPersonal', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -55,7 +55,7 @@ personalInfoForm.addEventListener('submit',async (e) => {
     })
 
     const result = await response.json()
-    console.log(result) */
+    console.log(result)
 
     const reader = new FileReader()
 
@@ -77,3 +77,31 @@ personalInfoForm.addEventListener('submit',async (e) => {
 
     reader.readAsArrayBuffer(data.picture)
 })
+
+async function loadPersonalInfo() {
+    const res = await fetch('/api/user/personal/token')
+    const result = await res.json()
+    if (result.success == false) return
+    
+    for(const key in result.data) {
+        if(key == "userId") continue
+        if(key == "picture") {
+            profilePicPreview.src = convertBytesToDataURL(result.data[key].data)
+            continue
+        }
+        if(key == "birthDate") {
+            personalInfoForm[key].value = result.data[key].split('T')[0]
+            continue
+        }
+        personalInfoForm[key].value = result.data[key]
+    }
+}
+
+function convertBytesToDataURL(bytes) {
+    const uint8Array = new Uint8Array(bytes);
+    const blob = new Blob([uint8Array]);
+    const dataUrl = URL.createObjectURL(blob);
+    return dataUrl;
+}
+
+loadPersonalInfo()

@@ -4,7 +4,7 @@ import { join } from "path"
 import { sha256 } from "./utils";
 import cookieParser from "cookie-parser";
 import { $Enums, Companie, Personal, Platoon, User } from "@prisma/client";
-import { addImageToUser, addManagerToCompanie, addPersonalToUser, addPlatoonToUser, createCompanie, createManager, createParrent, createPlatoon, createUser, findCompanieById, findPlatoonById, findPlatoonByMembersToken, findUserById, findUserByPassword, findUserByToken } from "./prisma/prisma";
+import { addImageToUser, addManagerToCompanie, addParrentToUser, addPersonalToUser, addPlatoonToUser, createCompanie, createManager, createParrent, createPlatoon, createUser, findCompanieById, findPersonalByUserId, findPlatoonById, findPlatoonByMembersToken, findUserById, findUserByPassword, findUserByToken } from "./prisma/prisma";
 
 const app = express()
 const upload = multer()
@@ -32,12 +32,19 @@ app.post("/api/auth", async (req, res) => {
     const hash = sha256(password);
     
     const user = await findUserByPassword(hash);
-
     console.log(user);
 
     if (user) {
         res.cookie("token", user.token, { maxAge: 1000*60*60*60*24*7, httpOnly: true  });
-        res.json({ success: true });
+
+        const personal = await findPersonalByUserId(user.id)
+        if(!personal) {
+            res.json({ success: true, message: "Brukeren har ikke personlig informasjon.", redirect: "/personal" });
+            return
+        }
+
+
+        res.json({ success: true, message: "Brukeren ble funnet.", redirect: "/dashboard" });
     } else {
         res.json({ success: false, message: "Feil passord." });
     }
@@ -68,6 +75,25 @@ app.post("/api/user/create", async (req, res) => {
     }
 })
 
+app.get("/api/user/personal/token", async (req, res) => {
+    const token = req.cookies.token
+    const user = await findUserByToken(token)
+
+    if(!user) {
+        res.json({ success: false, message: "Bruker ble ikke funnet." });
+        return
+    }
+
+    const personal = await findPersonalByUserId(user.id)
+    
+    if(personal) {
+        res.json({ success: true, data: personal });
+    } else {
+        res.json({ success: false, message: "Brukeren har ikke personlig informasjon." });
+    }
+
+})
+
 app.post("/api/user/connectToPlatoon", async (req, res) => {
     const { userId, platoonId } = req.body
     const user = await findUserById(userId);
@@ -83,7 +109,7 @@ app.post("/api/user/connectToPlatoon", async (req, res) => {
     } else {
         res.json({ success: false, message: "Brukeren eksisterer ikke." });
     }
-}) 
+})  
 
 app.post("/api/user/addPersonal", async (req, res) => {
     const body = req.body as Personal
@@ -91,7 +117,29 @@ app.post("/api/user/addPersonal", async (req, res) => {
     const user = await findUserByToken(token);
 
     if (user) {
-        await addPersonalToUser(user.id, body);
+        await addPersonalToUser(user.id, body).catch((e) => {
+            console.log(e);
+            res.json({ success: false, message: "Brukeren ble ikke oppdatert." });
+        })
+
+        res.json({ success: true, message: "Brukeren ble oppdatert." });
+    } else {
+        res.json({ success: false, message: "Brukeren eksisterer ikke." });
+    }
+})
+
+app.post("/api/user/connectToParrent", async (req, res) => {
+    const { userId, parrentId } = req.body
+    const user = await findUserById(userId);  
+
+
+    if (user) {
+        if(user.role !== $Enums.Role.MEMBER) {
+            res.json({ success: false, message: "Brukeren er ikke et medlem." });
+            return
+        }
+
+        await addParrentToUser(userId, parrentId);
         res.json({ success: true, message: "Brukeren ble oppdatert." });
     } else {
         res.json({ success: false, message: "Brukeren eksisterer ikke." });
@@ -145,7 +193,12 @@ app.get("/api/platoon/token", async (req, res) => {
     const token = req.cookies.token
     const user = await findUserByToken(token)
 
-    if(user == null || user.role !== $Enums.Role.MEMBER) {
+    if(!user) {
+        res.json({ success: false, message: "Bruker ble ikke funnet." });
+        return
+    }
+
+    if(user.role !== $Enums.Role.MEMBER) {
         res.json({ success: false, message: "Bruker er ikke medlem." });
         return
     }
