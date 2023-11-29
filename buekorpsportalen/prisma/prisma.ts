@@ -126,57 +126,30 @@ export async function findUserById(id:number) {
     })
 }
 
-export async function findPlatoonByMembersToken(token:string) {
-    return await prisma.user.findFirst({
+export async function findManagerByUserId(userId:number) {
+    return await prisma.manager.findFirst({
         where: {
-            token: token
+            userId: userId
         },
         select: {
-            member: {
-                select: {
-                    platoon: {
-                        select: {
-                            name: true,
-                            members: {
-                                select: {
-                                    user: {
-                                        select: {
-                                            id: true,
-                                            personal: true
-                                        }
-                                    },
-                                    parrents: {
-                                        select: {
-                                            user: {
-                                                select: {
-                                                    id: true,
-                                                    personal: true,
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            },
-                            companie: {
-                                select: {
-                                    managers: {
-                                        include: {
-                                            user: {
-                                                select: {
-                                                    id: true,
-                                                    personal: true
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                },
-
-            },
+            id: true,
         }
+    })
+}
+
+export async function findPlatoonIdByUserId(userId:number) {
+    return await prisma.member.findUnique({
+        where: {
+            userId: userId
+        },
+        select: {
+            platoon: {
+                select: {
+                    id: true,
+                }
+            }
+        },
+
     })
 }
 
@@ -185,9 +158,7 @@ export async function findPlatoonById(id:number) {
         where: {
             id: id
         },
-        select: {
-            name: true,
-            companieId: true,
+        include: {
             members: {
                 select: {
                     user: {
@@ -209,20 +180,6 @@ export async function findPlatoonById(id:number) {
                 
                 }
             },
-            companie: {
-                select: {
-                    managers: {
-                        select: {
-                            user: {
-                                select: {
-                                    id: true,
-                                    personal: true
-                                }
-                            }
-                        }
-                    }
-                }
-            }
         }
     })
 }
@@ -242,6 +199,44 @@ export async function findCompanieById(id:number) {
 
 }
 
+export async function findManagersCompanieById(companieId:number) {
+    return await prisma.companie.findUnique({
+        where: {
+            id: companieId
+        },
+        select: {
+            id: true,
+            name: true,
+            platoons: {
+                select: {
+                    id: true,
+                    name: true
+                }
+            }
+        }
+    })
+}
+
+export async function findManagersPersonalByCompanieId(companieId:number) {
+    return await prisma.companie.findUnique({
+        where: {
+            id: companieId
+        },
+        select: {
+            managers: {
+                select: {
+                    user: {
+                        select: {
+                            id: true,
+                            personal: true
+                        }
+                    }
+                }
+            }
+        }
+    })
+}
+
 export async function addManagerToCompanie(companieId:number, managerId:number) {
     return await prisma.companie.update({
         where: {
@@ -251,6 +246,22 @@ export async function addManagerToCompanie(companieId:number, managerId:number) 
             managers: {
                 connect: {
                     id: managerId
+                }
+            }
+        }
+    })
+
+}
+
+export async function findCompanieManagerById(companieId:number) {
+    return await prisma.companie.findFirst({
+        where: {
+            id: companieId
+        },
+        select: {
+            managers: {
+                select: {
+                    id: true,
                 }
             }
         }

@@ -1,4 +1,6 @@
+const title = document.getElementById('title')
 const folder = document.getElementById('folder')
+
 const folderOptions = {
     members: document.getElementById('memberOption'),
     managers: document.getElementById('managerOption'),
@@ -33,61 +35,7 @@ for (const option in folderOptions) {
     listOptionEventListeners(option)
 }
 
-const title = document.getElementById('title')
-const userList = document.getElementById('userList')
-
-async function fetchPlatoonData() {
-    const response = await fetch('/api/platoon/token', {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    })
-    const platoon = await response.json()
-    if (platoon.success == false) {
-        window.location.href = "/testing"
-    }
-
-    title.innerText = `Peletong ${platoon.data.name}`
-
-    const members = platoon.data.membersWithParrents
-    const managers = platoon.data.managers
-    
-
-    members.forEach(member => {
-        renderUser(member.user, "memberList", member.parrents, "parrents")
-        console.log(member)
-        member.parrents.forEach(parrent => {
-
-
-            const parrentWrapper = document.getElementById("wrapper" + parrent.user.personal.phone)
-            if (parrentWrapper) {
-                addLinkTo(
-                    member.user.personal?.firstName, 
-                    member.user.personal?.lastName, 
-                    member.user.personal?.phone, 
-                    "members",
-                    parrent.user.personal?.phone + "LinkTo" 
-                )
-                return
-            }
-
-            renderUser(parrent.user, "parrentList", [member], "members")
-        })
-    })
-
-
-    managers.forEach(manager => {
-        renderUser(manager.user, "managerList")
-    })
-}
-
-fetchPlatoonData()
-
 function renderUser(user, listId, linkTo = null, linkToListName = null) {
-    console.log("new user render ", user.id)
-    const time = new Date()
-
     const personalData = user.personal
 
     const wrapper = document.createElement('div')
@@ -146,8 +94,6 @@ function renderUser(user, listId, linkTo = null, linkToListName = null) {
         })
     }
 
-    /* add parrent creation code */ 
-
     wrapper.appendChild(pictureWrapper)
     wrapper.appendChild(name)
     wrapper.appendChild(phone)
@@ -159,7 +105,6 @@ function renderUser(user, listId, linkTo = null, linkToListName = null) {
 
     document.getElementById(listId).appendChild(wrapper)
     document.getElementById(listId).appendChild(hr)
-    console.log("render finished, time " + (new Date() - time) + "ms")
 }
 
 function addLinkTo(firstName, lastName, phone, listName, wrapperId = null) {
@@ -185,11 +130,9 @@ function addLinkTo(firstName, lastName, phone, listName, wrapperId = null) {
             scrollInterval = setInterval(() => {
                 const scrollWidth = (folder.scrollWidth - folder.clientWidth) / 2
                 if (folder.scrollLeft < 60) {
-                    console.log("scroll left")
                     highlight()
                     return
                 } else if (folder.scrollLeft > scrollWidth) {
-                    console.log("scroll right")
                     highlight() 
                     return
                 }
@@ -210,3 +153,93 @@ function convertBytesToDataURL(bytes) {
     const dataUrl = URL.createObjectURL(blob);
     return dataUrl;
 }
+
+function getUrlParam(param) {
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    return urlParams.get(param)
+}
+
+function checkLocalStorage() {
+    const platoon = localStorage.getItem('platoon')
+
+    if (platoon) {
+        return { 
+            success: true, 
+            data: JSON.parse(platoon) 
+        }
+    } else {
+        return { 
+            success: false, 
+        }
+    }
+}
+
+async function fetchPlatoonData() {
+    const platoonId = getUrlParam('id')
+    if (!platoonId) {
+        return history.go(-1)
+    } else if (isNaN(platoonId)) {
+        return history.go(-1)
+    }
+
+    const session = checkLocalStorage()
+
+    let name = ""
+    let members = []
+    let managers = []
+
+    if (session.success) {
+        members = session.data.members
+        managers = session.data.managers
+        name = `Peletong ${session.data.name}`
+
+    } else {
+        const response = await fetch('/api/platoon/id', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ platoonId: Number(platoonId) })
+        })
+
+        const platoon = await response.json()
+        if (platoon.success == false) {
+            window.location.href = platoon.redirect
+        }
+    
+        name = `Peletong ${platoon.data.name}`
+        members = platoon.data.membersWithParrents
+        managers = platoon.data.managers
+    }
+
+    members.forEach(member => {
+        renderUser(member.user, "memberList", member.parrents, "parrents")
+        
+        member.parrents.forEach(parrent => {
+
+
+            const parrentWrapper = document.getElementById("wrapper" + parrent.user.personal.phone)
+            if (parrentWrapper) {
+                addLinkTo(
+                    member.user.personal?.firstName, 
+                    member.user.personal?.lastName, 
+                    member.user.personal?.phone, 
+                    "members",
+                    parrent.user.personal?.phone + "LinkTo" 
+                )
+                return
+            }
+
+            renderUser(parrent.user, "parrentList", [member], "members")
+        })
+    })
+
+    managers.forEach(manager => {
+        renderUser(manager.user, "managerList")
+    })
+
+    title.innerText = name
+}
+
+fetchPlatoonData()

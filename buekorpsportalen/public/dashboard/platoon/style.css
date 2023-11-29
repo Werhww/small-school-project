@@ -113,7 +113,7 @@
 
 .rowItem {
     display: flex;
-    justify-content: center;
+    justify-content: center;    
 }
 
 .rowItem[data-small] {
@@ -144,5 +144,5 @@
 }
 
 .highlight {
-    background-color: #b5b5b530;
+    background-color: var(--hover-light);
 }

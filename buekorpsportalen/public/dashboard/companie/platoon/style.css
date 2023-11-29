@@ -1,0 +1,148 @@
+.listOptions {
+    border: var(--border-light);
+    border-radius: var(--border-radius) var(--border-radius) 0 0;
+
+    padding: 0.375rem 1.5rem;
+    width: 20rem;
+    height: 2.875rem;
+}
+
+.listOptions p{
+    transition: all 0.2s ease-in-out;
+    color: var(--light);
+
+    position: relative;
+    font-size: 0.875rem;
+    font-weight: 700;
+
+    cursor: pointer;
+    height: min-content;
+}
+
+.listOptions p[data-active="true"]{
+    color: var(--contrast);
+}
+
+.listOptions p:hover{
+    color: var(--contrast);
+}
+
+.listOptions p::before{
+    content: "";
+    position: absolute;
+    bottom: -0.125rem;
+    height: 0.1rem;
+    width: 0;
+    background-color: var(--contrast);
+    border-radius: 50px;
+    transition: all 0.3s ease-in-out;
+}
+
+.listOptions p[data-active="true"]::before {
+    width: 100%;
+}
+
+.listOptions p:hover::before{
+    width: 100%;
+}
+
+.folder {
+    border: var(--border-light);
+    border-radius: var(--border-radius);
+    background-color: var(--primary);
+
+    margin-top: -1.8rem;
+
+    scroll-behavior: smooth;
+    overflow-x: scroll;
+}
+
+.folder::-webkit-scrollbar {
+    width: 2rem;
+}
+
+.slide {
+    padding: 0.75rem 0;
+    gap: 1.5rem;
+    min-width: 100%;
+}
+
+.list {
+    /* gap: 1rem; */
+    overflow-y: scroll;
+    height: 40rem;
+}
+
+.list::-webkit-scrollbar {
+    width: 0.5rem;
+}
+.list::-webkit-scrollbar-track {
+    background: var(--primary);
+}
+  
+.list::-webkit-scrollbar-thumb, .list::-webkit-scrollbar-thumb:hover {
+    background: var(--light);
+    border-radius: calc(var(--border-radius) / 3);
+}
+
+.rowInfo {
+    justify-content: space-around;
+    transition: all 0.5s ease;
+    cursor: pointer;
+}
+
+.list > div {
+    height: 7rem;
+}
+
+.list > div:hover {
+    background-color: var(--hover);
+}
+
+
+.rowInfo h5 {
+    color: var(--light);
+    font-weight: 700;
+}
+
+.rowInfo p, .rowInfo a  {
+    color: var(--light);
+    font-weight: 500;
+    text-underline-offset: 0.1rem;
+}
+
+.rowItem {
+    display: flex;
+    justify-content: center;    
+}
+
+.rowItem[data-small] {
+    width: 6rem;
+}
+
+.rowItem[data-medium] {
+    width: 9rem;
+}
+
+.rowItem[data-big] {
+    width: 13rem;
+}
+
+.rowPic {
+    border-radius: 50%;
+    overflow: hidden;
+}
+
+.rowPic img {
+    width: 6rem;
+    height: 6rem;
+    object-fit: cover;
+}
+
+.parrents p {
+    text-decoration: underline;
+}
+
+.highlight {
+    background-color: var(--hover-light);
+}

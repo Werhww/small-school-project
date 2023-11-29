@@ -1,0 +1,83 @@
+.platoonFolders {
+    flex-wrap: wrap;
+    gap: 1.5rem;
+}
+
+.folder {
+    display: flex;
+    flex-direction: column;
+    height: fit-content;
+    width: fit-content;
+    cursor: pointer;
+}
+
+
+.folder > div:nth-child(1) {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+}
+
+.folder > div:nth-child(1) > div {
+    gap: 0.3rem;
+}
+
+div:nth-child(1) img {
+    transition: all 0.2s ease-in-out;
+    filter: var(--svg-light);
+}
+
+
+.folder:hover > div:nth-child(1) img {
+    padding-bottom: 0.7rem;
+}
+
+
+.folder div[data-top] {
+    width: 4rem;
+    height: 2rem;
+    border-radius: var(--border-radius) var(--border-radius) 0 0;
+    border: var(--border-light);
+
+}
+
+.folder div[data-bottom] {
+    transition: all 0.2s ease-in-out;
+    margin-top: -1.5rem;
+
+    max-width: 8rem;
+    max-height: 5rem;
+    width: 8rem;
+    height: 5rem;
+    
+    border-radius: var(--border-radius);
+    background-color: var(--primary);
+    border: var(--border-light);
+    z-index: 10;
+
+    overflow: hidden;
+}
+
+.folder div[data-bottom] input {
+    font-size: 1.5rem;
+    font-weight: 500;
+
+    width: 7rem;
+
+
+    padding: 1rem 0 0 1rem;
+
+    outline: none;
+    border: none;
+    background-color: transparent;
+
+    user-select: none;
+    pointer-events: none;
+    cursor: pointer;
+}
+
+.folder:hover div[data-bottom] {
+    background-color: var(--hover-light);
+    margin-top: -0.8rem;
+    height: 4.3rem;
+}

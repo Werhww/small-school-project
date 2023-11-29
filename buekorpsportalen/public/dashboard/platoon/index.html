@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../../global.css">
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js" defer></script>
+
+    <title>Dashboard</title>
+</head>
+<body data-column data-big-gap>
+    <div data-flex data-row data-space-between data-align-baseline>
+        <h1 data-bold id="title">Peletong</h1>
+        <p>Personlig info</p>
+    </div>
+    <div data-flex data-column>
+        <div data-row data-space-between class="listOptions">
+            <p id="memberOption" data-active="true">Medlem</p>
+            <p id="managerOption">Ledelse</p>
+            <p id="parrentOption">Foreldre</p>
+        </div>
+        <div data-row class="folder" id="folder">
+            <div data-column data-flex class="slide" id="memberSlide">
+                <div data-row class="rowInfo">
+                    <h5 class="rowItem" data-info data-small>Bilde</h5>
+                    <h5 class="rowItem" data-info data-big>Navn</h5>
+                    <h5 class="rowItem" data-info data-medium>Telefon</h5>
+                    <h5 class="rowItem" data-info data-big>Epost</h5>
+                    <h5 class="rowItem" data-info data-big>Foreldre</h5>
+                </div>
+                <div data-column class="list" id="memberList">
+                </div>
+            </div>
+            <div data-column data-flex class="slide" id="managerSlide">
+                <div data-row class="rowInfo">
+                    <h5 class="rowItem" data-info data-small>Bilde</h5>
+                    <h5 class="rowItem" data-info data-big>Navn</h5>
+                    <h5 class="rowItem" data-info data-medium>Telefon</h5>
+                    <h5 class="rowItem" data-info data-big>Epost</h5>
+                    <h5 class="rowItem" data-info data-big></h5>
+                </div>
+                <div data-column class="list" id="managerList">
+
+                </div>
+            </div>
+            <div data-column data-flex class="slide" id="parrentSlide">
+                <div data-row class="rowInfo">
+                    <h5 class="rowItem" data-info data-small>Bilde</h5>
+                    <h5 class="rowItem" data-info data-big>Navn</h5>
+                    <h5 class="rowItem" data-info data-medium>Telefon</h5>
+                    <h5 class="rowItem" data-info data-big>Epost</h5>
+                    <h5 class="rowItem" data-info data-big>Barn</h5>
+                </div>
+                <div data-column class="list" id="parrentList">
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

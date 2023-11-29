@@ -4,7 +4,7 @@ import { join } from "path"
 import { sha256 } from "./utils";
 import cookieParser from "cookie-parser";
 import { $Enums, Companie, Personal, Platoon, User } from "@prisma/client";
-import { addImageToUser, addManagerToCompanie, addParrentToUser, addPersonalToUser, addPlatoonToUser, createCompanie, createManager, createParrent, createPlatoon, createUser, findCompanieById, findPersonalByUserId, findPlatoonById, findPlatoonByMembersToken, findUserById, findUserByPassword, findUserByToken } from "./prisma/prisma";
+import { addImageToUser, addManagerToCompanie, addParrentToUser, addPersonalToUser, addPlatoonToUser, createCompanie, createManager, createParrent, createPlatoon, createUser, findCompanieById, findCompanieManagerById, findManagerByUserId, findManagersCompanieById, findManagersPersonalByCompanieId, findPersonalByUserId, findPlatoonById, findPlatoonIdByUserId, findUserById, findUserByPassword, findUserByToken } from "./prisma/prisma";
 
 const app = express()
 const upload = multer()
@@ -13,8 +13,8 @@ app.use(express.json({ limit: "50mb" }))
 app.use(express.static(join(__dirname, "public")));
 app.use(cookieParser());
  
-app.listen(3000, () => {
-    console.log("http://localhost:3000");
+app.listen(3210, () => {
+    console.log("http://localhost:3210");
 })
 
 app.get("/", (req, res) => {
@@ -43,8 +43,19 @@ app.post("/api/auth", async (req, res) => {
             return
         }
 
-
-        res.json({ success: true, message: "Brukeren ble funnet.", redirect: "/dashboard" });
+        if(user.role === $Enums.Role.MEMBER) {
+            res.json({ success: true, message: "Brukeren ble funnet.", redirect: "/dashboard/platoon" });
+            return
+        } else if(user.role === $Enums.Role.MANAGER) {
+            res.json({ success: true, message: "Brukeren ble funnet.", redirect: "/dashboard" });
+            return
+        } else if(user.role === $Enums.Role.PARRENT) {
+            res.json({ success: true, message: "Brukeren ble funnet.", redirect: "/dashboard/platoon" });
+            return
+        } else {
+            res.json({ success: true, message: "Brukeren ble funnet.", redirect: "/testing" });
+            return
+        }
     } else {
         res.json({ success: false, message: "Feil passord." });
     }
@@ -182,6 +193,41 @@ app.post("/api/companie/manager/add", async (req, res) => {
     }
 })
 
+app.post("/api/companie/id", async (req, res) => {
+    const token = req.cookies.token
+    const { companieId } = req.body
+
+    const user = await findUserByToken(token)
+ 
+    if(!user) {
+        res.json({ success: false, message: "Bruker ble ikke funnet.", redirect: "/auth" })
+        return
+    } else if (user.role == $Enums.Role.MEMBER) {
+        res.json({ success: false, message: "Bruker er ikke manager.", redirect: "/dashboard/platoon" })
+        return
+    }
+
+
+    const companieManagers = await findCompanieManagerById(companieId);
+    const manager = await findManagerByUserId(user.id);
+
+    if(!manager) {
+        res.json({ success: false, message: "Bruker mangler manager data.", redirect: "/dashboard" })
+        return
+    } else if(!companieManagers) {
+        res.json({ success: false, message: "Kompaniet ble ikke funnet.", redirect: "/dashboard" })
+        return
+    } else if (companieManagers.managers.some(m => m.id === manager.id) == false) {
+        res.json({ success: false, message: "Bruker har ikke tilgang til Kompaniet.", redirect: "/dashboard" })
+        return
+        
+    } else {
+        const companie = await findManagersCompanieById(companieId)
+        res.json({ success: true, data: companie })
+        return
+    }
+})
+
 app.post("/api/platoon/create", async (req, res) => {
     const body = req.body as Platoon
 
@@ -191,6 +237,7 @@ app.post("/api/platoon/create", async (req, res) => {
 
 app.get("/api/platoon/token", async (req, res) => { 
     const token = req.cookies.token
+
     const user = await findUserByToken(token)
 
     if(!user) {
@@ -203,40 +250,73 @@ app.get("/api/platoon/token", async (req, res) => {
         return
     }
 
-    const userWithPlatoon = await findPlatoonByMembersToken(token);
-    
-    if(userWithPlatoon) {
+    const member = await findPlatoonIdByUserId(user.id)
+    if(member) {
+        const platoon = await findPlatoonById(member.platoon.id);
+        const managers = await findManagersPersonalByCompanieId(platoon?.companieId!);
+
         res.json({
             success: true,
             data: {
-                name: userWithPlatoon.member?.platoon.name,
-                membersWithParrents: userWithPlatoon.member?.platoon.members,
-                managers: userWithPlatoon.member?.platoon.companie.managers 
+                name: platoon?.name,
+                membersWithParrents: platoon?.members,
+                managers: managers?.managers 
             }
         })
     } else {
         res.json({ success: false, message: "Palaton ble ikke funnet." });
     }
-
 })
 
-app.get("/api/platoon/id", async (req, res) => {
+app.post("/api/platoon/id", async (req, res) => {
     const { platoonId } = req.body
+    const token = req.cookies.token
+    
+    const user = await findUserByToken(token)
+
+    if(!user) {
+        res.json({ success: false, message: "Bruker ble ikke funnet." });
+        return
+    } else if(user.role == $Enums.Role.MEMBER || user.role == $Enums.Role.PARRENT) {
+        res.json({ success: false, message: "Bruker har ikke tilgang.", redirect: "/dashboard/platoon" });
+        return
+    }
 
     const platoon = await findPlatoonById(platoonId);
-    
-    if(platoon) {
+    if(platoon) { 
+        const managers = await findManagersPersonalByCompanieId(platoon?.companieId);
+
         res.json({ 
             success: true, 
             data: {
                 name: platoon.name,
-                companieId: platoon.companieId,
-                managers: platoon.companie.managers,
+                managers: managers?.managers,
                 membersWithParrents: platoon.members,
             }
-        });
+        })
     } else {
-        res.json({ success: false, message: "Palaton ble ikke funnet." });
+        res.json({ success: false, message: "Palaton ble ikke funnet.", redirect: "/dashboard/companie" });
+    }
+})
+
+app.post("/api/platoon/edit", async (req, res) => {
+    const { platoonId } = req.body
+    const token = req.cookies.token
+    
+    const user = await findUserByToken(token)
+
+    if(!user) {
+        res.json({ success: false, message: "Bruker ble ikke funnet.", redirect: "/auth" });
+        return
+    } else if(user.role == $Enums.Role.MEMBER || user.role == $Enums.Role.PARRENT) {
+        res.json({ success: false, message: "Bruker har ikke tilgang.", redirect: "/dashboard/platoon" });
+        return
     }
 
+    const platoon = await findPlatoonById(platoonId);
+    if(platoon) { 
+
+    } else {
+        res.json({ success: false, message: "Palaton ble ikke funnet.", redirect: "/dashboard/companie" });
+    }
 })
