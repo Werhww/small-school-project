@@ -1,9 +1,9 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700');
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700");
 
 body, body * {
     padding: 0;
     margin: 0;
-    font-family: 'Inter', sans-serif;
+    font-family: "Inter", sans-serif;
     color: var(--contrast);
 }
 
@@ -19,13 +19,22 @@ body {
     --secondary: #CC0000;
     --contrast: #fff;
     --light: #B5B5B5;
+
     --hover: #1C1C1C;
     --hover-light: #434343;
 
+    --accept: #427742;
+    --accept-hover: #2ea22e;
+
+    --denied: #7c2929;
+    --denied-hover: var(--secondary);
+    
     --border: 2px solid var(--contrast);
     --border-light: 2px solid var(--light);
 
     --svg-light: brightness(0) saturate(100%) invert(84%) sepia(0%) saturate(1%) hue-rotate(167deg) brightness(89%) contrast(85%);
+    --svg-secondary: brightness(0) saturate(100%) invert(9%) sepia(78%) saturate(6908%) hue-rotate(359deg) brightness(98%) contrast(110%);
+    --svg-contrast: brightness(0) saturate(100%) invert(100%) sepia(0%) saturate(0%) hue-rotate(93deg) brightness(103%) contrast(103%);
 
     --box-height: 3.5rem;
 
@@ -262,7 +271,7 @@ input[data-normal] {
 
     padding: 0 1rem;
     
-    width: 100%;
+    max-height: 100%;
     height: var(--box-height);
     border: var(--border-light);
     border-radius: var(--border-radius);
@@ -322,4 +331,89 @@ input[type="number"]::-webkit-inner-spin-button {
 
 .button:focus {
     opacity: 0.8;
+}
+
+.button[data-denied] {
+    background-color: var(--denied);
+}
+
+.button[data-denied]:hover {
+    background-color: var(--denied-hover);
+}
+
+.button[data-accept] {
+    background-color: var(--accept);
+}
+
+.button[data-accept]:hover {
+    background-color: var(--accept-hover);
+}
+
+.alert {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 100;
+
+    width: 30rem;
+    height: 15rem;
+
+    padding: 1rem 2rem;
+
+    background-color: var(--primary);
+    border-radius: var(--border-radius);
+    border: var(--border);
+}
+
+.alert h4 {
+    font-weight: 400;
+}
+
+.alert > div {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.alert div button {
+    width: 30%;
+}
+
+.newFolder {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+
+    position: fixed;
+    top: 30%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 100;
+
+    max-width: 20rem;
+    width: 20rem;
+    height: min-content;
+
+    padding: 1.5rem 1.5rem;
+
+    background-color: var(--primary);
+    border-radius: var(--border-radius);
+    border: var(--border);
+}
+
+.outOfBound {
+    width: 100vh;
+    height: 100vh;
+
+    position: fixed;
+    top: 0;
+    left: 0;
+
+    z-index: 88;
 }

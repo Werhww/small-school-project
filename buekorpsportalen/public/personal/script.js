@@ -1,7 +1,7 @@
-const profilePicInput = document.getElementById('profilePic')
-const profilePicPreview = document.getElementById('profilePicPreview')
+const profilePicInput = document.getElementById("profilePic")
+const profilePicPreview = document.getElementById("profilePicPreview")
 
-profilePicInput.addEventListener('change', (event) => {
+profilePicInput.addEventListener("change", (event) => {
     const file = event.target.files[0]
     const reader = new FileReader()
     reader.readAsDataURL(file)
@@ -11,7 +11,7 @@ profilePicInput.addEventListener('change', (event) => {
     }
 })
 
-const onlyNumberInputs = document.querySelectorAll('.onlyNumber')
+const onlyNumberInputs = document.querySelectorAll(".onlyNumber")
 
 function isNumber(e) {
     let char = e.key
@@ -26,26 +26,26 @@ function isNumber(e) {
 }
 
 onlyNumberInputs.forEach(input => {
-    input.addEventListener('keydown', isNumber)
+    input.addEventListener("keydown", isNumber)
 })
 
-const personalInfoForm = document.getElementById('personalInfoForm')
+const personalInfoForm = document.getElementById("personalInfoForm")
 
-personalInfoForm.addEventListener('submit',async (e) => {
+personalInfoForm.addEventListener("submit",async (e) => {
     e.preventDefault()
 
     const formData = new FormData(personalInfoForm)
     const data = Object.fromEntries(formData)
 
-    const fields = personalInfoForm.getElementsByTagName('*')
+    const fields = personalInfoForm.getElementsByTagName("*")
     for(var i = 0; i < fields.length; i++) {
         fields[i].disabled = true
     }
 
-    const response = await fetch('/api/user/addPersonal', {
-        method: 'POST',
+    const response = await fetch("/api/user/addPersonal", {
+        method: "POST",
         headers: {
-            'Content-Type': 'application/json'
+            "Content-Type": "application/json"
         },
         body: JSON.stringify({
             ...data,
@@ -64,10 +64,10 @@ personalInfoForm.addEventListener('submit',async (e) => {
         const blob = new Blob([arrayBuffer])
 
         const formData = new FormData()
-        formData.append('picture', blob, 'image.jpg')
+        formData.append("picture", blob, "image.jpg")
 
-        const response = await fetch('/api/user/addImage', {
-            method: 'POST',
+        const response = await fetch("/api/user/addImage", {
+            method: "POST",
             body: formData
         })
 
@@ -79,7 +79,7 @@ personalInfoForm.addEventListener('submit',async (e) => {
 })
 
 async function loadPersonalInfo() {
-    const res = await fetch('/api/user/personal/token')
+    const res = await fetch("/api/user/personal/token")
     const result = await res.json()
     if (result.success == false) return
     
@@ -90,7 +90,7 @@ async function loadPersonalInfo() {
             continue
         }
         if(key == "birthDate") {
-            personalInfoForm[key].value = result.data[key].split('T')[0]
+            personalInfoForm[key].value = result.data[key].split("T")[0]
             continue
         }
         personalInfoForm[key].value = result.data[key]

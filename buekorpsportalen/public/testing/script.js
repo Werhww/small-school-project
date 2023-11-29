@@ -1,14 +1,14 @@
-const newUserForm = document.getElementById('newUser');
+const newUserForm = document.getElementById("newUser");
 
-newUserForm.addEventListener('submit', async (e) => {
+newUserForm.addEventListener("submit", async (e) => {
     e.preventDefault()
 
     const form  = new FormData(newUserForm)
     const data = Object.fromEntries(form.entries())
 
-    const res = await fetch('/api/user/create', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+    const res = await fetch("/api/user/create", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data)
     })
 
@@ -17,17 +17,17 @@ newUserForm.addEventListener('submit', async (e) => {
     newUserForm.reset()
 })
 
-const newCompanieForm = document.getElementById('newCompanie');
+const newCompanieForm = document.getElementById("newCompanie");
 
-newCompanieForm.addEventListener('submit', async (e) => {
+newCompanieForm.addEventListener("submit", async (e) => {
     e.preventDefault() 
 
     const form  = new FormData(newCompanieForm)
     const data = Object.fromEntries(form.entries())
     console.log(data) 
-    const res = await fetch('/api/companie/create', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+    const res = await fetch("/api/companie/create", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data)
     })
 
@@ -36,17 +36,17 @@ newCompanieForm.addEventListener('submit', async (e) => {
     newCompanieForm.reset()
 })
 
-const newPlatoonForm = document.getElementById('newPlatoon');
+const newPlatoonForm = document.getElementById("newPlatoon");
 
-newPlatoonForm.addEventListener('submit', async (e) => {
+newPlatoonForm.addEventListener("submit", async (e) => {
     e.preventDefault() 
 
     const form  = new FormData(newPlatoonForm)
     const data = Object.fromEntries(form.entries())
     console.log(data) 
-    const res = await fetch('/api/platoon/create', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+    const res = await fetch("/api/platoon/create", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
             name: data.name,
             companieId: Number(data.companieId)
@@ -58,17 +58,17 @@ newPlatoonForm.addEventListener('submit', async (e) => {
     newCompanieForm.reset()
 })
 
-const addManagerToCompanieForm = document.getElementById('addManagerToCompanie');
+const addManagerToCompanieForm = document.getElementById("addManagerToCompanie");
 
-addManagerToCompanieForm.addEventListener('submit', async (e) => {
+addManagerToCompanieForm.addEventListener("submit", async (e) => {
     e.preventDefault() 
 
     const form  = new FormData(addManagerToCompanieForm)
     const data = Object.fromEntries(form.entries())
     console.log(data) 
-    const res = await fetch('/api/companie/manager/add', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+    const res = await fetch("/api/companie/manager/add", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
             managerId: Number(data.managerId),
             companieId: Number(data.companieId)
@@ -80,17 +80,17 @@ addManagerToCompanieForm.addEventListener('submit', async (e) => {
     newCompanieForm.reset()
 })
 
-const addUserToPlatoonForm = document.getElementById('addUserToPlatoon');
+const addUserToPlatoonForm = document.getElementById("addUserToPlatoon");
 
-addUserToPlatoonForm.addEventListener('submit', async (e) => {
+addUserToPlatoonForm.addEventListener("submit", async (e) => {
     e.preventDefault() 
 
     const form  = new FormData(addUserToPlatoonForm)
     const data = Object.fromEntries(form.entries())
     console.log(data) 
-    const res = await fetch('/api/user/connectToPlatoon', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+    const res = await fetch("/api/user/connectToPlatoon", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
             userId: Number(data.userId),
             platoonId: Number(data.platoonId)
@@ -102,17 +102,17 @@ addUserToPlatoonForm.addEventListener('submit', async (e) => {
     newCompanieForm.reset()
 })
 
-const addParrentToUser = document.getElementById('addParrentToUser');
+const addParrentToUser = document.getElementById("addParrentToUser");
 
-addParrentToUser.addEventListener('submit', async (e) => {
+addParrentToUser.addEventListener("submit", async (e) => {
     e.preventDefault() 
 
     const form  = new FormData(addParrentToUser)
     const data = Object.fromEntries(form.entries())
     console.log(data) 
-    const res = await fetch('/api/user/connectToParrent', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+    const res = await fetch("/api/user/connectToParrent", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
             userId: Number(data.userId),
             parrentId: Number(data.parrentId)

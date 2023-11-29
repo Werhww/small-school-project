@@ -1,14 +1,14 @@
-const folder = document.getElementById('folder')
+const folder = document.getElementById("folder")
 const folderOptions = {
-    members: document.getElementById('memberOption'),
-    managers: document.getElementById('managerOption'),
-    parrents: document.getElementById('parrentOption')
+    members: document.getElementById("memberOption"),
+    managers: document.getElementById("managerOption"),
+    parrents: document.getElementById("parrentOption")
 }
 
 const folderSlides = {
-    members: document.getElementById('memberSlide'),
-    managers: document.getElementById('managerSlide'),
-    parrents: document.getElementById('parrentSlide')
+    members: document.getElementById("memberSlide"),
+    managers: document.getElementById("managerSlide"),
+    parrents: document.getElementById("parrentSlide")
 }
 
 function clearActive() {
@@ -23,7 +23,7 @@ function updateActive(key) {
 }
 
 function listOptionEventListeners(key) {
-    folderOptions[key].addEventListener('click', () => {
+    folderOptions[key].addEventListener("click", () => {
         folderSlides[key].scrollIntoView()
         updateActive(key)
     })
@@ -33,20 +33,17 @@ for (const option in folderOptions) {
     listOptionEventListeners(option)
 }
 
-const title = document.getElementById('title')
-const userList = document.getElementById('userList')
+const title = document.getElementById("title")
+const userList = document.getElementById("userList")
 
 async function fetchPlatoonData() {
-    const response = await fetch('/api/platoon/token', {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    })
-
+    const response = await fetch("/api/platoon/token")
     const platoon = await response.json()
+    
     if (platoon.success == false) {
-        window.location.href = "/testing"
+        await alertPopup(data.message)
+        window.location.href = data.redirect
+        return
     }
     
     const name = `Peletong ${platoon.data.name}`
@@ -86,46 +83,46 @@ fetchPlatoonData()
 function renderUser(user, listId, linkTo = null, linkToListName = null) {
     const personalData = user.personal
 
-    const wrapper = document.createElement('div')
-    wrapper.classList.add('rowInfo')
+    const wrapper = document.createElement("div")
+    wrapper.classList.add("rowInfo")
     wrapper.dataset.row = ""
     wrapper.dataset.alignCenter = ""
     wrapper.id = "wrapper" + personalData?.phone
 
-    const pictureWrapper = document.createElement('div')
-    pictureWrapper.classList.add('rowItem')
-    pictureWrapper.classList.add('rowPic')
+    const pictureWrapper = document.createElement("div")
+    pictureWrapper.classList.add("rowItem")
+    pictureWrapper.classList.add("rowPic")
     pictureWrapper.dataset.small = ""
 
-    const picture = document.createElement('img')
-    picture.src = '../icons/user.svg'
+    const picture = document.createElement("img")
+    picture.src = "../icons/user.svg"
     if (personalData?.picture) {
         const bytes = personalData.picture.data
         picture.src = convertBytesToDataURL(bytes)
     }
     pictureWrapper.appendChild(picture)
 
-    const name = document.createElement('p')
-    name.classList.add('rowItem')
+    const name = document.createElement("p")
+    name.classList.add("rowItem")
     name.dataset.big = ""
     name.innerText = `${personalData?.firstName} ${personalData?.lastName}`
 
-    const phone = document.createElement('p')
-    phone.classList.add('rowItem')
+    const phone = document.createElement("p")
+    phone.classList.add("rowItem")
     phone.dataset.medium = ""
     phone.innerText = personalData?.phone
     phone.href = `tel:${personalData?.phone}`
 
-    const email = document.createElement('p')
-    email.classList.add('rowItem')
+    const email = document.createElement("p")
+    email.classList.add("rowItem")
     email.dataset.big = ""
     email.innerText = personalData?.email
     email.href = `mailto:${personalData?.email}`
     
 
-    const parrentWrapper = document.createElement('div')
-    parrentWrapper.classList.add('rowItem')
-    parrentWrapper.classList.add('parrents')
+    const parrentWrapper = document.createElement("div")
+    parrentWrapper.classList.add("rowItem")
+    parrentWrapper.classList.add("parrents")
     parrentWrapper.dataset.big = ""
     parrentWrapper.dataset.column = ""
     parrentWrapper.id = personalData?.phone + "LinkTo"
@@ -148,7 +145,7 @@ function renderUser(user, listId, linkTo = null, linkToListName = null) {
     wrapper.appendChild(email)
     wrapper.appendChild(parrentWrapper)
 
-    const hr = document.createElement('hr')
+    const hr = document.createElement("hr")
     hr.dataset.short = ""
 
     document.getElementById(listId).appendChild(wrapper)
@@ -156,21 +153,21 @@ function renderUser(user, listId, linkTo = null, linkToListName = null) {
 }
 
 function addLinkTo(firstName, lastName, phone, listName, wrapperId = null) {
-    const parrentLink = document.createElement('p')
+    const parrentLink = document.createElement("p")
     parrentLink.innerText = `${firstName} ${lastName}`
 
-    parrentLink.addEventListener('click', () => {
+    parrentLink.addEventListener("click", () => {
         const link = document.getElementById("wrapper" + phone)
-        link.scrollIntoView({ behavior: 'smooth', block: 'start'})
+        link.scrollIntoView({ behavior: "smooth", block: "start"})
         updateActive(listName)
 
         let scrollInterval = null
 
         function highlight() {
             clearInterval(scrollInterval)
-            link.classList.add('highlight')
+            link.classList.add("highlight")
             setTimeout(() => {
-                link.classList.remove('highlight')
+                link.classList.remove("highlight")
             }, 500) 
         }
 

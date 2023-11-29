@@ -1,16 +1,16 @@
-const title = document.getElementById('title')
-const folder = document.getElementById('folder')
+const title = document.getElementById("title")
+const folder = document.getElementById("folder")
 
 const folderOptions = {
-    members: document.getElementById('memberOption'),
-    managers: document.getElementById('managerOption'),
-    parrents: document.getElementById('parrentOption')
+    members: document.getElementById("memberOption"),
+    managers: document.getElementById("managerOption"),
+    parrents: document.getElementById("parrentOption")
 }
 
 const folderSlides = {
-    members: document.getElementById('memberSlide'),
-    managers: document.getElementById('managerSlide'),
-    parrents: document.getElementById('parrentSlide')
+    members: document.getElementById("memberSlide"),
+    managers: document.getElementById("managerSlide"),
+    parrents: document.getElementById("parrentSlide")
 }
 
 function clearActive() {
@@ -25,7 +25,7 @@ function updateActive(key) {
 }
 
 function listOptionEventListeners(key) {
-    folderOptions[key].addEventListener('click', () => {
+    folderOptions[key].addEventListener("click", () => {
         folderSlides[key].scrollIntoView()
         updateActive(key)
     })
@@ -38,46 +38,46 @@ for (const option in folderOptions) {
 function renderUser(user, listId, linkTo = null, linkToListName = null) {
     const personalData = user.personal
 
-    const wrapper = document.createElement('div')
-    wrapper.classList.add('rowInfo')
+    const wrapper = document.createElement("div")
+    wrapper.classList.add("rowInfo")
     wrapper.dataset.row = ""
     wrapper.dataset.alignCenter = ""
     wrapper.id = "wrapper" + personalData?.phone
 
-    const pictureWrapper = document.createElement('div')
-    pictureWrapper.classList.add('rowItem')
-    pictureWrapper.classList.add('rowPic')
+    const pictureWrapper = document.createElement("div")
+    pictureWrapper.classList.add("rowItem")
+    pictureWrapper.classList.add("rowPic")
     pictureWrapper.dataset.small = ""
 
-    const picture = document.createElement('img')
-    picture.src = '../icons/user.svg'
+    const picture = document.createElement("img")
+    picture.src = "../icons/user.svg"
     if (personalData?.picture) {
         const bytes = personalData.picture.data
         picture.src = convertBytesToDataURL(bytes)
     }
     pictureWrapper.appendChild(picture)
 
-    const name = document.createElement('p')
-    name.classList.add('rowItem')
+    const name = document.createElement("p")
+    name.classList.add("rowItem")
     name.dataset.big = ""
     name.innerText = `${personalData?.firstName} ${personalData?.lastName}`
 
-    const phone = document.createElement('p')
-    phone.classList.add('rowItem')
+    const phone = document.createElement("p")
+    phone.classList.add("rowItem")
     phone.dataset.medium = ""
     phone.innerText = personalData?.phone
     phone.href = `tel:${personalData?.phone}`
 
-    const email = document.createElement('p')
-    email.classList.add('rowItem')
+    const email = document.createElement("p")
+    email.classList.add("rowItem")
     email.dataset.big = ""
     email.innerText = personalData?.email
     email.href = `mailto:${personalData?.email}`
     
 
-    const parrentWrapper = document.createElement('div')
-    parrentWrapper.classList.add('rowItem')
-    parrentWrapper.classList.add('parrents')
+    const parrentWrapper = document.createElement("div")
+    parrentWrapper.classList.add("rowItem")
+    parrentWrapper.classList.add("parrents")
     parrentWrapper.dataset.big = ""
     parrentWrapper.dataset.column = ""
     parrentWrapper.id = personalData?.phone + "LinkTo"
@@ -100,7 +100,7 @@ function renderUser(user, listId, linkTo = null, linkToListName = null) {
     wrapper.appendChild(email)
     wrapper.appendChild(parrentWrapper)
 
-    const hr = document.createElement('hr')
+    const hr = document.createElement("hr")
     hr.dataset.short = ""
 
     document.getElementById(listId).appendChild(wrapper)
@@ -108,21 +108,21 @@ function renderUser(user, listId, linkTo = null, linkToListName = null) {
 }
 
 function addLinkTo(firstName, lastName, phone, listName, wrapperId = null) {
-    const parrentLink = document.createElement('p')
+    const parrentLink = document.createElement("p")
     parrentLink.innerText = `${firstName} ${lastName}`
 
-    parrentLink.addEventListener('click', () => {
+    parrentLink.addEventListener("click", () => {
         const link = document.getElementById("wrapper" + phone)
-        link.scrollIntoView({ behavior: 'smooth', block: 'start'})
+        link.scrollIntoView({ behavior: "smooth", block: "start"})
         updateActive(listName)
 
         let scrollInterval = null
 
         function highlight() {
             clearInterval(scrollInterval)
-            link.classList.add('highlight')
+            link.classList.add("highlight")
             setTimeout(() => {
-                link.classList.remove('highlight')
+                link.classList.remove("highlight")
             }, 500) 
         }
 
@@ -161,7 +161,7 @@ function getUrlParam(param) {
 }
 
 function checkLocalStorage() {
-    const platoon = localStorage.getItem('platoon')
+    const platoon = localStorage.getItem("platoon")
 
     if (platoon) {
         return { 
@@ -176,10 +176,12 @@ function checkLocalStorage() {
 }
 
 async function fetchPlatoonData() {
-    const platoonId = getUrlParam('id')
+    const platoonId = getUrlParam("id")
     if (!platoonId) {
+        await alertPopup("Id er ble ikke fundet")
         return history.go(-1)
     } else if (isNaN(platoonId)) {
+        await alertPopup("Id er ikke et nummer")
         return history.go(-1)
     }
 
@@ -195,17 +197,12 @@ async function fetchPlatoonData() {
         name = `Peletong ${session.data.name}`
 
     } else {
-        const response = await fetch('/api/platoon/id', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ platoonId: Number(platoonId) })
-        })
-
-        const platoon = await response.json()
+        const platoon = await request("/api/platoon/id", { platoonId: Number(platoonId) })
+        
         if (platoon.success == false) {
+            await alertPopup(data.message)
             window.location.href = platoon.redirect
+            return
         }
     
         name = `Peletong ${platoon.data.name}`

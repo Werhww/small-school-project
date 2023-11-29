@@ -4,7 +4,7 @@ import { join } from "path"
 import { sha256 } from "./utils";
 import cookieParser from "cookie-parser";
 import { $Enums, Companie, Personal, Platoon, User } from "@prisma/client";
-import { addImageToUser, addManagerToCompanie, addParrentToUser, addPersonalToUser, addPlatoonToUser, createCompanie, createManager, createParrent, createPlatoon, createUser, findCompanieById, findCompanieManagerById, findManagerByUserId, findManagersCompanieById, findManagersPersonalByCompanieId, findPersonalByUserId, findPlatoonById, findPlatoonIdByUserId, findUserById, findUserByPassword, findUserByToken } from "./prisma/prisma";
+import { addImageToUser, addManagerToCompanie, addParrentToUser, addPersonalToUser, addPlatoonToUser, createCompanie, createManager, createParrent, createPlatoon, createUser, deletePlatoon, editPlatoon, findCompanieById, findCompanieManagerById, findManagerByUserId, findManagersCompanieById, findManagersPersonalByCompanieId, findPersonalByUserId, findPlatoonById, findPlatoonDataForDelete, findPlatoonIdByUserId, findUserById, findUserByPassword, findUserByToken } from "./prisma/prisma";
 
 const app = express()
 const upload = multer()
@@ -157,7 +157,7 @@ app.post("/api/user/connectToParrent", async (req, res) => {
     }
 })
 
-app.post("/api/user/addImage", upload.single('picture'), async (req, res) => {
+app.post("/api/user/addImage", upload.single("picture"), async (req, res) => {
     const buffer = req.file?.buffer
     const token = req.cookies.token
     const user = await findUserByToken(token);
@@ -173,7 +173,7 @@ app.post("/api/user/addImage", upload.single('picture'), async (req, res) => {
         res.json({ success: false, message: "Brukeren eksisterer ikke." });
     }
 })
-
+ 
 app.post("/api/companie/create", async (req, res) => {
     const body = req.body as Companie
 
@@ -231,7 +231,12 @@ app.post("/api/companie/id", async (req, res) => {
 app.post("/api/platoon/create", async (req, res) => {
     const body = req.body as Platoon
 
-    await createPlatoon(body)
+    const platoon =  await createPlatoon(body).catch((e) => {
+        console.log(e);
+        res.json({ success: false, message: "Palaton ble ikke opprettet." });
+    })
+
+    if(!platoon) return
     res.json({ success: true, message: "Palaton ble opprettet." });
 })
 
@@ -241,12 +246,12 @@ app.get("/api/platoon/token", async (req, res) => {
     const user = await findUserByToken(token)
 
     if(!user) {
-        res.json({ success: false, message: "Bruker ble ikke funnet." });
+        res.json({ success: false, message: "Bruker ble ikke funnet.", redirect: "/auth" });
         return
     }
 
     if(user.role !== $Enums.Role.MEMBER) {
-        res.json({ success: false, message: "Bruker er ikke medlem." });
+        res.json({ success: false, message: "Bruker er ikke medlem.", redirect: "/dashboard" });
         return
     }
 
@@ -264,7 +269,7 @@ app.get("/api/platoon/token", async (req, res) => {
             }
         })
     } else {
-        res.json({ success: false, message: "Palaton ble ikke funnet." });
+        res.json({ success: false, message: "Palaton ble ikke funnet.", redirect: "/dashboard" });
     }
 })
 
@@ -300,7 +305,7 @@ app.post("/api/platoon/id", async (req, res) => {
 })
 
 app.post("/api/platoon/edit", async (req, res) => {
-    const { platoonId } = req.body
+    const { platoonId, name } = req.body
     const token = req.cookies.token
     
     const user = await findUserByToken(token)
@@ -313,10 +318,37 @@ app.post("/api/platoon/edit", async (req, res) => {
         return
     }
 
-    const platoon = await findPlatoonById(platoonId);
-    if(platoon) { 
-
-    } else {
+    editPlatoon(platoonId, name).catch((e) => {
+        console.log(e);
         res.json({ success: false, message: "Palaton ble ikke funnet.", redirect: "/dashboard/companie" });
+    })
+
+    res.json({ success: true, message: "Palaton ble oppdatert." });
+})
+
+app.post("/api/platoon/delete", async (req, res) => {
+    const { platoonId } = req.body
+    const token = req.cookies.token
+    
+    const user = await findUserByToken(token)
+
+    if(!user) {
+        res.json({ success: false, message: "Bruker ble ikke funnet.", redirect: "/auth" });
+        return
+    } else if(user.role == $Enums.Role.MEMBER || user.role == $Enums.Role.PARRENT) {
+        res.json({ success: false, message: "Bruker har ikke tilgang.", redirect: "/dashboard/platoon" });
+        return
     }
+    
+    const platoon = await findPlatoonDataForDelete(platoonId)
+    if(!platoon) {
+        res.json({ success: false, message: "Palaton ble ikke funnet.", redirect: "/dashboard/companie" });
+        return
+    } else if(platoon.members.length > 0) {
+        res.json({ success: false, message: "Alle medlem må flyttes fra Palatongen!", redirect: "/dashboard/companie" });
+        return
+    }
+
+    deletePlatoon(platoonId)
+    res.json({ success: true, message: "Palatong ble slettet" });
 })

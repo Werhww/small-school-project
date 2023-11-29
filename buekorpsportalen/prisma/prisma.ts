@@ -1,4 +1,4 @@
-import { PrismaClient, type User, type Personal, type Parrent, type Member, type Companie, type Manager, Platoon } from '@prisma/client'
+import { PrismaClient, type User, type Personal, type Parrent, type Member, type Companie, type Manager, Platoon } from "@prisma/client"
 const prisma = new PrismaClient()
 
 export async function createUser(user:User) {
@@ -272,5 +272,35 @@ export async function findCompanieManagerById(companieId:number) {
 export async function createPlatoon(platoon:Platoon) {
     return await prisma.platoon.create({
         data: platoon
+    })
+}
+
+export async function editPlatoon(id:number, name:string) {
+    return await prisma.platoon.update({
+        where: {
+            id: id
+        },
+        data: {
+            name: name
+        }
+    })
+}
+
+export async function deletePlatoon(id:number) {
+    return await prisma.platoon.delete({
+        where: {
+            id: id
+        }
+    })
+}
+
+export async function findPlatoonDataForDelete(id:number) {
+    return await prisma.platoon.findUnique({
+        where: {
+            id: id
+        },
+        select: {
+            members: true
+        }
     })
 }

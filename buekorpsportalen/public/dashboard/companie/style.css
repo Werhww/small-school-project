@@ -32,6 +32,14 @@ div:nth-child(1) img {
     padding-bottom: 0.7rem;
 }
 
+.folder:hover > div:nth-child(1) img:nth-child(1):hover {
+    filter: var(--svg-contrast);
+}
+
+.folder div:nth-child(1) img:nth-child(2):hover {
+    filter: var(--svg-secondary);
+}
+
 
 .folder div[data-top] {
     width: 4rem;
@@ -80,4 +88,21 @@ div:nth-child(1) img {
     background-color: var(--hover-light);
     margin-top: -0.8rem;
     height: 4.3rem;
+}
+
+.addFolder div[data-bottom] {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.addFolder:hover div[data-bottom] {
+    margin-top: -1.2rem;
+    height: 4.7rem;
+}
+
+.addFolder img{
+    width: 2.5rem;
+    height: 2.5rem;
+    filter: var(--svg-light);
 }
