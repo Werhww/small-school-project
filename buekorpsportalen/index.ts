@@ -14,8 +14,10 @@ app.use(express.static(join(__dirname, "public")))
 app.use(cookieParser())
 
 app.use (async (req, res, next) => {
+    if(req.path === "/api/auth") return next();
+
     const token = req.cookies.token
-    if(!token) return res.redirect("/auth")
+    if(!token) return res.json({ success: false, message: "Bruker ble ikke funnet.", redirect: "/auth" });
     next();
 })
 
@@ -57,8 +59,13 @@ app.post("/api/auth", async (req, res) => {
     }
 })
 
-/* User api calls */
+app.get("/api/logout", async (req, res) => {
+    console.log("logout");
+    res.clearCookie("token")
+    res.redirect("/auth")
+})
 
+/* User api calls */
 app.post("/api/user/create", async (req, res) => {
     const body = req.body as User
     const hash = sha256(body.password);
@@ -105,7 +112,7 @@ app.get("/api/user/personal/token", async (req, res) => {
 
 app.post("/api/user/personal/update", async (req, res) => {
     const body = req.body as Personal
-    const token = req.cookies.token
+    const token = req.cookies.token 
     const user = await findUserByToken(token);
 
     if (user) {
@@ -114,15 +121,15 @@ app.post("/api/user/personal/update", async (req, res) => {
         if (personal) {
             updatePersonal(personal.id, body).catch((e) => {
                 console.log(e);
-                res.json({ success: false, message: "Brukeren ble ikke oppdatert." });
-            })
+                res.json({ success: false, message: "Epost eller mobil nummer er alerede i bruk" });
+            })    
 
             return res.json({ success: true, message: "Brukeren ble oppdatert." });
-        }
+        } 
 
         await addPersonalToUser(user.id, body).catch((e) => {
             console.log(e);
-            res.json({ success: false, message: "Brukeren ble ikke oppdatert." });
+            res.json({ success: false, message: "Epost eller mobil nummer er alerede i bruk" });
         })
 
         res.json({ success: true, message: "Brukeren ble oppdatert." });

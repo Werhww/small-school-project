@@ -62,6 +62,16 @@ body {
     text-underline-offset: 0.1rem;
 }
 
+*[data-hover] {
+    transition: all 0.2s ease-in-out;
+    cursor: pointer;
+    color: var(--light)
+}
+
+*[data-hover]:hover {
+    color: var(--contrast);
+}
+
 *[data-shadow-short] {
     filter: drop-shadow(var(--shadow-short));
 }

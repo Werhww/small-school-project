@@ -140,3 +140,7 @@ async function newFolder(companieId) {
     document.body.appendChild(outOfBound)
     document.body.appendChild(wrapper)
 }
+
+async function logOut() {
+    await fetch('/api/logout')
+}

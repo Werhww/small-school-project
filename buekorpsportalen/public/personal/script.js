@@ -70,6 +70,11 @@ personalInfoForm.addEventListener("submit", async (e) => {
             await alertPopup(result.message)
             return
         }
+
+        await alertPopup("Profilen din har blitt oppdatert")
+        for(var i = 0; i < fields.length; i++) {
+            fields[i].disabled = false
+        }
     }
 
     reader.readAsArrayBuffer(data.picture)

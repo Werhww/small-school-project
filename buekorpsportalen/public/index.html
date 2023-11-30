@@ -3,18 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../../global.css">
+    <link rel="stylesheet" href="./global.css">
     <link rel="stylesheet" href="style.css">
 
-    <script src="../../global.js" defer></script>
+    <script src="./global.js" defer></script>
     <script src="script.js" defer></script>
 
     <title>Platoon</title>
 </head>
 <body data-column data-big-gap>
-    <div data-flex data-row data-space-between data-align-baseline>
+    <div data-flex data-row data-big-gap data-align-baseline>
         <h1 data-bold id="title">Peletong</h1>
-        <p>Personlig info</p>
+        <div data-row data-gap>
+            <h5 onclick="javascript:window.location.href = '/personal'" data-undeline data-hover>Personlig info</h5>
+            <p data-hover>|</p>
+            <h5 onclick="javascript:logOut()" data-undeline data-hover>Logut</h5>
+        </div>
     </div>
     <div data-flex data-column>
         <div data-row data-space-between class="listOptions">

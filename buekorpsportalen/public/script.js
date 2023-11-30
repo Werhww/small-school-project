@@ -41,12 +41,11 @@ async function fetchPlatoonData() {
     const platoon = await response.json()
     
     if (platoon.success == false) {
-        await alertPopup(data.message)
-        window.location.href = data.redirect
+        await alertPopup(platoon.message)
+        window.location.href = platoon.redirect
         return
     }
-    
-    console.log(platoon)
+
     const name = `Peletong ${platoon.data.name}`
     const members = platoon.data.membersWithParrents
     const managers = platoon.data.managers
