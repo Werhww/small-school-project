@@ -1,29 +1,30 @@
 const profilePicInput = document.getElementById("profilePic")
 const profilePicPreview = document.getElementById("profilePicPreview")
 
-profilePicInput.addEventListener("change", (event) => {
+const maximumSize = 1000 * 1000 * 1 // 1MB
+
+profilePicInput.addEventListener("change", async (event) => {
     const file = event.target.files[0]
+    if(file.size >= maximumSize) {
+        await alertPopup("Bilden er for stort, max 1mb")
+        return
+    }
+
     const reader = new FileReader()
     reader.readAsDataURL(file)
-    reader.onload = () => {
+    reader.onload = async () => {
         profilePicPreview.src = reader.result
         profilePicPreview.dataset.image = true
     }
 })
 
+profilePicPreview.addEventListener("error", () => {
+    profilePicPreview.src = "/icons/user.svg"
+    profilePicPreview.dataset.image = false
+    console.log("error")
+})
+
 const onlyNumberInputs = document.querySelectorAll(".onlyNumber")
-
-function isNumber(e) {
-    let char = e.key
-    
-    const normals = ["Backspace", "ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Tab", "Delete", "Home", "End", "Enter", "Escape", "Control", "Alt", "Shift", "Meta"]
-
-    if (normals.includes(char)) return true
-    if (/^[0-9+()-.]*$/.test(char)) return true
-    
-    e.preventDefault()
-    return false
-}
 
 onlyNumberInputs.forEach(input => {
     input.addEventListener("keydown", isNumber)
@@ -31,7 +32,7 @@ onlyNumberInputs.forEach(input => {
 
 const personalInfoForm = document.getElementById("personalInfoForm")
 
-personalInfoForm.addEventListener("submit",async (e) => {
+personalInfoForm.addEventListener("submit", async (e) => {
     e.preventDefault()
 
     const formData = new FormData(personalInfoForm)
@@ -42,37 +43,33 @@ personalInfoForm.addEventListener("submit",async (e) => {
         fields[i].disabled = true
     }
 
-    const response = await fetch("/api/user/addPersonal", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-            ...data,
-            birthDate: new Date(data.birthDate).toISOString(),
-            picture: null
-        })
+    const result = await request("/api/user/personal/update", {
+        ...data,
+        birthDate: new Date(data.birthDate).toISOString(),
+        picture: null
     })
 
-    const result = await response.json()
-    console.log(result)
+    if(result.success == false) {
+        await alertPopup(result.message)
+        return
+    }
 
     const reader = new FileReader()
-
     reader.onload = async () => {
         const arrayBuffer = reader.result
         const blob = new Blob([arrayBuffer])
-
         const formData = new FormData()
         formData.append("picture", blob, "image.jpg")
-
-        const response = await fetch("/api/user/addImage", {
+        
+        const result = await fetch("/api/user/image/add", {
             method: "POST",
             body: formData
         })
 
-        const result = await response.json()
-        console.log(result)
+        if (result.success == false) {
+            await alertPopup(result.message)
+            return
+        }
     }
 
     reader.readAsArrayBuffer(data.picture)
@@ -85,23 +82,15 @@ async function loadPersonalInfo() {
     
     for(const key in result.data) {
         if(key == "userId") continue
-        if(key == "picture") {
-            profilePicPreview.src = convertBytesToDataURL(result.data[key].data)
-            continue
-        }
         if(key == "birthDate") {
             personalInfoForm[key].value = result.data[key].split("T")[0]
             continue
         }
         personalInfoForm[key].value = result.data[key]
     }
+
+    profilePicPreview.src = `/api/user/image/${result.data.id}`
 }
 
-function convertBytesToDataURL(bytes) {
-    const uint8Array = new Uint8Array(bytes);
-    const blob = new Blob([uint8Array]);
-    const dataUrl = URL.createObjectURL(blob);
-    return dataUrl;
-}
 
 loadPersonalInfo()

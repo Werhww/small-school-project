@@ -271,10 +271,14 @@ input[data-normal] {
 
     padding: 0 1rem;
     
-    max-height: 100%;
+    width: 100%;
     height: var(--box-height);
     border: var(--border-light);
     border-radius: var(--border-radius);
+}
+
+input[data-unset] {
+    width: unset;
 }
 
 input[data-normal]:focus  {
@@ -282,9 +286,6 @@ input[data-normal]:focus  {
     border: var(--border);
 }
 
-input[data-normal]::placeholder {
-    color: var(--light);
-}
 
 /* Input date */
 input[type="date"]::-webkit-calendar-picker-indicator {

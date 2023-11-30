@@ -50,11 +50,11 @@ function renderUser(user, listId, linkTo = null, linkToListName = null) {
     pictureWrapper.dataset.small = ""
 
     const picture = document.createElement("img")
-    picture.src = "../icons/user.svg"
-    if (personalData?.picture) {
-        const bytes = personalData.picture.data
-        picture.src = convertBytesToDataURL(bytes)
-    }
+    picture.setAttribute("loading", "lazy")
+    picture.src = "/api/user/image/" + personalData.id
+    picture.addEventListener("error", () => {
+        picture.src = "/icons/user.svg"
+    })
     pictureWrapper.appendChild(picture)
 
     const name = document.createElement("p")
@@ -160,21 +160,6 @@ function getUrlParam(param) {
     return urlParams.get(param)
 }
 
-function checkLocalStorage() {
-    const platoon = localStorage.getItem("platoon")
-
-    if (platoon) {
-        return { 
-            success: true, 
-            data: JSON.parse(platoon) 
-        }
-    } else {
-        return { 
-            success: false, 
-        }
-    }
-}
-
 async function fetchPlatoonData() {
     const platoonId = getUrlParam("id")
     if (!platoonId) {
@@ -185,34 +170,22 @@ async function fetchPlatoonData() {
         return history.go(-1)
     }
 
-    const session = checkLocalStorage()
-
-    let name = ""
-    let members = []
-    let managers = []
-
-    if (session.success) {
-        members = session.data.members
-        managers = session.data.managers
-        name = `Peletong ${session.data.name}`
-
-    } else {
-        const platoon = await request("/api/platoon/id", { platoonId: Number(platoonId) })
-        
-        if (platoon.success == false) {
-            await alertPopup(data.message)
-            window.location.href = platoon.redirect
-            return
-        }
-    
-        name = `Peletong ${platoon.data.name}`
-        members = platoon.data.membersWithParrents
-        managers = platoon.data.managers
+    const platoon = await request("/api/platoon/id", { platoonId: Number(platoonId) })
+    console.log(platoon)
+    if (platoon.success == false) {
+        await alertPopup(platoon.message)
+        window.location.href = platoon.redirect
+        return
     }
+
+    const name = `Peletong ${platoon.data.name}`
+    const members = platoon.data.membersWithParrents
+    const managers = platoon.data.managers
+    
 
     members.forEach(member => {
         renderUser(member.user, "memberList", member.parrents, "parrents")
-        
+        console.log(member)
         member.parrents.forEach(parrent => {
 
 

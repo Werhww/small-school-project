@@ -10,6 +10,18 @@ async function request(url, data) {
     return await res.json()
 }
 
+function isNumber(e) {
+    let char = e.key
+    
+    const normals = ["Backspace", "ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Tab", "Delete", "Home", "End", "Enter", "Escape", "Control", "Alt", "Shift", "Meta"]
+
+    if (normals.includes(char)) return true
+    if (/^[0-9+()-.]*$/.test(char)) return true
+    
+    e.preventDefault()
+    return false
+}
+
 function alertPopup(message) {
     const alert = document.createElement("div")
     alert.classList.add("alert")
@@ -70,6 +82,7 @@ async function newFolder(companieId) {
     input.type = "text"
     input.name = "name"
     input.dataset.normal = ""
+    input.dataset.unset = ""
     input.classList.add("input")
     input.placeholder = "Navn på peletong"
 

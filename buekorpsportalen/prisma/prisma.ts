@@ -57,12 +57,56 @@ export async function addPersonalToUser(userId:number, personal:Personal) {
 
 }
 
+export async function updatePersonal(personalId:number, personal:Personal) {
+    return await prisma.personal.update({
+        where: {
+            id: personalId
+        },
+        data: {
+            firstName: personal.firstName,
+            lastName: personal.lastName,
+            birthDate: personal.birthDate,
+            email: personal.email,
+            phone: personal.phone,
+            address: personal.address,
+            city: personal.city,
+            postalCode: personal.postalCode
+        }
+    })
+
+}
+
 export async function findPersonalByUserId(userId:number) {
     return await prisma.personal.findFirst({
         where: {
             userId: userId
+        },
+        select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+            birthDate: true,                             
+            email: true,
+            phone: true,
+            picture: false,                           
+            address: true,                           
+            city: true,                          
+            postalCode: true,                   
         }
     })
+
+}
+
+export async function findPictureByPersonalId(personalId:number) {
+    return await prisma.personal.findFirst({
+        where: {
+            id: personalId
+        },
+        select: {
+            picture: true
+        }
+    })
+
 
 }
 
@@ -164,7 +208,20 @@ export async function findPlatoonById(id:number) {
                     user: {
                         select: {
                             id: true,
-                            personal: true
+                            personal: {
+                                select: {
+                                    id: true,
+                                    firstName: true,
+                                    lastName: true,
+                                    birthDate: true,                             
+                                    email: true,
+                                    phone: true,
+                                    picture: false,                           
+                                    address: true,                           
+                                    city: true,                          
+                                    postalCode: true,                           
+                                }
+                            }
                         }
                     },
                     parrents: {
@@ -172,7 +229,20 @@ export async function findPlatoonById(id:number) {
                             user: {
                                 select: {
                                     id: true,
-                                    personal: true
+                                    personal: {
+                                        select: {
+                                            id: true,
+                                            firstName: true,
+                                            lastName: true,
+                                            birthDate: true,                             
+                                            email: true,
+                                            phone: true,
+                                            picture: false,                           
+                                            address: true,                           
+                                            city: true,                          
+                                            postalCode: true,                           
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -228,7 +298,20 @@ export async function findManagersPersonalByCompanieId(companieId:number) {
                     user: {
                         select: {
                             id: true,
-                            personal: true
+                            personal: {
+                                select: {
+                                    id: true,
+                                    firstName: true,
+                                    lastName: true,
+                                    birthDate: true,                             
+                                    email: true,
+                                    phone: true,
+                                    picture: false,                           
+                                    address: true,                           
+                                    city: true,                          
+                                    postalCode: true,                           
+                                }
+                            }
                         }
                     }
                 }

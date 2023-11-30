@@ -46,6 +46,7 @@ async function fetchPlatoonData() {
         return
     }
     
+    console.log(platoon)
     const name = `Peletong ${platoon.data.name}`
     const members = platoon.data.membersWithParrents
     const managers = platoon.data.managers
@@ -95,11 +96,12 @@ function renderUser(user, listId, linkTo = null, linkToListName = null) {
     pictureWrapper.dataset.small = ""
 
     const picture = document.createElement("img")
-    picture.src = "../icons/user.svg"
-    if (personalData?.picture) {
-        const bytes = personalData.picture.data
-        picture.src = convertBytesToDataURL(bytes)
-    }
+    picture.setAttribute("loading", "lazy")
+    picture.src = "/api/user/image/" + personalData.id
+    picture.addEventListener("error", () => {
+        picture.src = "/icons/user.svg"
+    })
+    
     pictureWrapper.appendChild(picture)
 
     const name = document.createElement("p")
