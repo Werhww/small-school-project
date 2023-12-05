@@ -14,7 +14,11 @@
     <form id="personalInfoForm" data-column data-big-gap>
         <div data-row data-big-gap data-align-baseline>
             <h1 data-bold id="title">Personal</h1>
-            <h5 onclick="javascript:window.history.back()" data-undeline data-hover>Tilbake</h5>
+            <div data-row data-gap>
+                <h5 onclick="logOut()" data-undeline data-hover>Log av</h5>
+                <p data-hover>|</p>
+                <h5 onclick="javascript:window.history.back()" data-undeline data-hover>Tilbake</h5>
+            </div>
         </div>
         <div data-column data-medium-gap>
             <div data-column data-gap>

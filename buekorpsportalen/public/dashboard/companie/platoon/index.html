@@ -12,9 +12,15 @@
     <title>Dashboard</title>
 </head>
 <body data-column data-big-gap>
-    <div data-flex data-row data-space-between data-align-baseline>
+    <div data-row data-big-gap data-align-baseline>
         <h1 data-bold id="title">Peletong</h1>
-        <h5 onclick="javascript:history.go(-1)" data-undeline>Tilbake</h5>
+        <div data-row data-gap>
+            <h5 onclick="logOut()" data-undeline data-hover>Log av</h5>
+            <p data-hover>|</p>
+            <h5 onclick="javascript:window.location.href = '/personal'" data-undeline data-hover>Personlig info</h5>
+            <p data-hover>|</p>
+            <h5 onclick="javascript:history.back()" data-undeline data-hover>Tilbake</h5>
+        </div>
     </div>
     <div data-flex data-column>
         <div data-row data-space-between class="listOptions">

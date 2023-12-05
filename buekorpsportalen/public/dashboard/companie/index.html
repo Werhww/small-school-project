@@ -11,8 +11,15 @@
     <title>Kompani</title>
 </head>
 <body data-column data-big-gap>
-    <div data-row data-space-between data-align-baseline>
+    <div data-row data-big-gap data-align-baseline>
         <h1 data-bold id="title">Kompani</h1>
+        <div data-row data-gap>
+            <h5 onclick="logOut()" data-undeline data-hover>Log av</h5>
+            <p data-hover>|</p>
+            <h5 onclick="javascript:window.location.href = '/personal'" data-undeline data-hover>Personlig info</h5>
+            <p data-hover>|</p>
+            <h5 onclick="javascript:history.back()" data-undeline data-hover>Tilbake</h5>
+        </div>
     </div>
     <div data-row class="platoonFolders" id="folders">
     </div>

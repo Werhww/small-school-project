@@ -7,9 +7,64 @@
 
     <script src="../global.js" defer></script>
 
+    <script src="script.js" defer></script>
+    <link rel="stylesheet" href="style.css">
+
     <title>Dashboard</title>
 </head>
-<body>
-    
+<body data-column data-big-gap>
+    <div data-row data-big-gap data-align-baseline>
+        <h1 data-bold>Kompanier</h1>
+        <div data-row data-gap>
+            <h5 onclick="logOut()" data-undeline data-hover>Log av</h5>
+            <p data-hover>|</p>
+            <h5 onclick="javascript:window.location.href = '/personal'" data-undeline data-hover>Personlig info</h5>
+        </div>
+    </div>
+
+    <div id="companieContainer">
+        <div class="companie">
+            <div class="folders">
+                <div class="folder">
+                    <div data-top></div>
+                    <div data-bottom></div>
+                </div>
+                <div class="folder">
+                    <div data-top></div>
+                    <div data-bottom>
+                        <img src="../icons/edit.svg">
+                    </div>
+                </div>
+                <div class="folder">
+                    <div data-top></div>
+                    <div data-bottom>
+                        <img src="../icons/delete.svg">
+                    </div>
+                </div>
+            </div>
+            <h4>Hjørnebordet</h4>
+        </div>
+        <div class="companie">
+            <div class="folders">
+                <div class="folder">
+                    <div data-top></div>
+                    <div data-bottom></div>
+                </div>
+                <div class="folder">
+                    <div data-top></div>
+                    <div data-bottom>
+                        <img src="../icons/edit.svg">
+                    </div>
+                </div>
+                <div class="folder">
+                    <div data-top></div>
+                    <div data-bottom>
+                        <img src="../icons/delete.svg">
+                    </div>
+                </div>
+            </div>
+            <input type="text" value="Hjørnebordet">
+        </div>
+    </div>
 </body>
 </html>

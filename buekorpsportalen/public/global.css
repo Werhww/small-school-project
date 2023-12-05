@@ -396,7 +396,7 @@ input[type="number"]::-webkit-inner-spin-button {
     width: 30%;
 }
 
-.newFolder {
+.newPlatoon {
     display: flex;
     flex-direction: column;
     gap: 1.5rem;

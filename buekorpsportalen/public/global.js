@@ -71,9 +71,9 @@ function alertPopup(message) {
     return alertResponse
 }
 
-async function newFolder(companieId) {
+async function newPlatoon(companieId) {
     const wrapper = document.createElement("div")
-    wrapper.classList.add("newFolder")
+    wrapper.classList.add("newPlatoon")
 
     const title = document.createElement("h3")
     title.innerText = "Ny peletong"
@@ -139,6 +139,10 @@ async function newFolder(companieId) {
 
     document.body.appendChild(outOfBound)
     document.body.appendChild(wrapper)
+}
+
+async function newCompanie() {
+    
 }
 
 async function logOut() {

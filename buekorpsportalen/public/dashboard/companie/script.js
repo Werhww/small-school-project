@@ -147,7 +147,7 @@ function lastFolder(companieId) {
     wrapper.appendChild(bottom)
 
     wrapper.addEventListener("click", () => {
-        newFolder(companieId)
+        newPlatoon(companieId)
     })
 
     return wrapper

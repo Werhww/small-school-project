@@ -1,0 +1,137 @@
+#companieContainer {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+}
+
+.companie {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    
+    width: fit-content;
+    cursor: pointer;
+}
+
+.folders {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    height: 11rem;
+
+    position: relative;
+}
+
+.folders > div:nth-child(1) {
+    top: 10px;
+    z-index: 1;
+}
+
+.folders > div:nth-child(2) {
+    top: 40px;
+    z-index: 2;
+}
+
+.folders > div:nth-child(3) {
+    top: 70px;
+    z-index: 3;
+}
+
+.folders:hover > div:nth-child(1) {
+    top: 8px;
+    left: -35px;
+    rotate: -15deg;
+}
+
+.folders:hover > div:nth-child(2) {
+    top: 26px;
+    left: 20px;
+    rotate: 12deg;
+}
+
+.folders:hover > div:nth-child(3) {
+    top: 58px;
+    left: -15px;
+    rotate: -8deg;
+}
+
+
+.folder {
+    display: flex;
+    flex-direction: column;
+    height: fit-content;
+    width: fit-content;
+
+    position: absolute;
+
+    transition: all 0.3s ease-in-out;
+
+    left: 0;
+    transform: translateX(-50%);
+}
+
+.folder:nth-child(2):hover > div[data-bottom] {
+    background-color: var(--hover-light);
+}
+
+.folder:nth-child(2):hover > div[data-bottom] > img {
+    filter: var(--svg-contrast);
+}
+
+.folder:nth-child(3):hover > div[data-bottom] {
+    background-color: var(--denied);
+}
+
+.folder:nth-child(3):hover > div[data-bottom] > img {
+    filter: var(--svg-secondary);
+}
+
+.folder div[data-top] {
+    width: 4rem;
+    height: 2rem;
+    border-radius: var(--border-radius) var(--border-radius) 0 0;
+    border: var(--border-light);
+    background-color: var(--primary);
+}
+
+.folder div[data-bottom] {
+    transition: all 0.3s ease-in-out;
+    margin-top: -1.5rem;
+
+    max-width: 8rem;
+    max-height: 5rem;
+    width: 8rem;
+    height: 5rem;
+    
+    border-radius: var(--border-radius);
+    background-color: var(--primary);
+    border: var(--border-light);
+    z-index: 10;
+
+    overflow: hidden;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.folder div[data-bottom] > img {
+    transition: all 0.3s ease-in-out;
+    filter: var(--svg-light);
+}
+
+.companie > input {
+    font-size: 1.5rem;
+    font-weight: 500;
+
+    width: 12rem;
+
+    outline: none;
+    border: none;
+    background-color: transparent;
+
+    user-select: none;
+    cursor: pointer;
+    text-align: center;
+}

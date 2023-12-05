@@ -1,6 +1,7 @@
 .platoonFolders {
     flex-wrap: wrap;
     gap: 1.5rem;
+    cursor: pointer;
 }
 
 .folder {
@@ -8,7 +9,6 @@
     flex-direction: column;
     height: fit-content;
     width: fit-content;
-    cursor: pointer;
 }
 
 
