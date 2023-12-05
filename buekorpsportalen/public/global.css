@@ -428,3 +428,45 @@ input[type="number"]::-webkit-inner-spin-button {
 
     z-index: 88;
 }
+
+.newPlatoon {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+
+    position: fixed;
+    top: 30%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 100;
+
+    max-width: 20rem;
+    width: 20rem;
+    height: min-content;
+
+    padding: 1.5rem 1.5rem;
+
+    background-color: var(--primary);
+    border-radius: var(--border-radius);
+    border: var(--border);
+}
+
+.newCompanie {
+    z-index: 1000;
+
+    position: fixed;
+    top: 30%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
+    background-color: var(--primary);
+    border-radius: var(--border-radius);
+    border: var(--border);
+    padding: 1.5rem 1.5rem;
+    
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+
+
+}

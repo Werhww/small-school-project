@@ -4,7 +4,7 @@ import { join } from "path"
 import { sha256 } from "./utils";
 import cookieParser from "cookie-parser";
 import { $Enums, Companie, Personal, Platoon, User } from "@prisma/client";
-import { addImageToUser, addManagerToCompanie, addParrentToUser, addPersonalToUser, addPlatoonToUser, createCompanie, createManager, createParrent, createPlatoon, createUser, deletePlatoon, editPlatoon, findCompanieById, findCompanieManagerById, findManagerByUserId, findManagersCompanieById, findManagersPersonalByCompanieId, findPersonalByUserId, findPictureByPersonalId, findPlatoonById, findPlatoonDataForDelete, findPlatoonIdByUserId, findUserById, findUserByPassword, findUserByToken, updatePersonal } from "./prisma/prisma";
+import { addImageToUser, addManagerToCompanie, addParrentToUser, addPersonalToUser, addPlatoonToUser, createCompanie, createManager, createParrent, createPlatoon, createUser, deleteCompanie, deletePlatoon, editCompanie, editPlatoon, findCompanieById, findCompanieManagerById, findCompaniesByUserId, findManagerByUserId, findManagersCompanieById, findManagersPersonalByCompanieId, findPersonalByUserId, findPictureByPersonalId, findPlatoonById, findPlatoonDataForDelete, findPlatoonIdByUserId, findUserById, findUserByPassword, findUserByToken, getAllCompanies, getAllManagers, getAllMembers, getAllParrents, getAllPlatoons, getAllUsers, updateMember, updatePersonal } from "./prisma/prisma";
 
 const app = express()
 const upload = multer()
@@ -21,8 +21,8 @@ app.use (async (req, res, next) => {
     next();
 })
 
-app.listen(3210, () => {
-    console.log("http://localhost:3210");
+app.listen(3235, () => {
+    console.log("http://localhost:3235");
 })
 
 app.post("/api/auth", async (req, res) => {
@@ -57,6 +57,26 @@ app.post("/api/auth", async (req, res) => {
     } else {
         res.json({ success: false, message: "Feil passord." });
     }
+})
+
+app.get("/api/auth/admin", async (req, res) => {
+    const token = req.cookies.token
+    const user = await findUserByToken(token)
+
+    if(!user) {
+        res.json({ success: false, message: "Bruker ble ikke funnet.", redirect: "/auth" });
+        return
+    } else if(user.role !== $Enums.Role.ADMIN) {
+        if(user.role === $Enums.Role.MANAGER) {
+            res.json({ success: false, message: "Bruker er ikke admin.", redirect: "/dashboard" });
+            return
+        }
+
+        res.json({ success: false, message: "Bruker har ikke tilgang.", redirect: "/" });
+        return
+    }
+
+    res.json({ success: true, message: "Bruker har tilgang." });
 })
 
 app.get("/api/logout", async (req, res) => {
@@ -195,8 +215,8 @@ app.post("/api/user/connectToParrent", async (req, res) => {
 
 
     if (user) {
-        if(user.role !== $Enums.Role.MEMBER) {
-            res.json({ success: false, message: "Brukeren er ikke et medlem." });
+        if(user.role == $Enums.Role.MEMBER || user.role == $Enums.Role.PARRENT) {
+            res.json({ success: false, message: "Brukeren har ikke tilgang til dette." });
             return
         }
 
@@ -212,8 +232,8 @@ app.post("/api/user/connectToPlatoon", async (req, res) => {
     const user = await findUserById(userId);
 
     if (user) {
-        if(user.role !== $Enums.Role.MEMBER) {
-            res.json({ success: false, message: "Brukeren er ikke et medlem." });
+        if(user.role == $Enums.Role.MEMBER || user.role == $Enums.Role.PARRENT) {
+            res.json({ success: false, message: "Brukeren har ikke tilgang til dette." });
             return
         }
 
@@ -224,11 +244,46 @@ app.post("/api/user/connectToPlatoon", async (req, res) => {
     }
 })
 
+app.post("/api/user/changePlatoon", async (req, res) => {
+    const { userId, platoonId } = req.body
+    const user = await findUserById(userId);
+
+    if (user) {
+        if(user.role == $Enums.Role.MEMBER || user.role == $Enums.Role.PARRENT) {
+            res.json({ success: false, message: "Brukeren har ikke tilgang til dette." });
+            return
+        }
+
+        await updateMember(userId, platoonId);
+        res.json({ success: true, message: "Brukeren ble oppdatert." });
+    } else {
+        res.json({ success: false, message: "Brukeren eksisterer ikke." });
+    }
+})
+
 /* Companie api calls */
 app.post("/api/companie/create", async (req, res) => {
     const body = req.body as Companie
+    const token = req.cookies.token
+
+    const user = await findUserByToken(token)
+    if(!user) {
+        res.json({ success: false, message: "Bruker ble ikke funnet.", redirect: "/auth" })
+        return
+    }
 
     const companie = await createCompanie(body);
+
+    if (user.role == $Enums.Role.MANAGER) {
+        const manager = await findManagerByUserId(user.id)
+        if(!manager) {
+            res.json({ success: false, message: "Kompanie ble opprettet men du ble ikke lagt til som leder." })
+            return
+        }
+
+        await addManagerToCompanie(companie.id, manager.id)
+    }
+
     res.json({ success: true, message: "Kompaniet ble opprettet.", data: { companie } });
 })
 
@@ -253,7 +308,7 @@ app.post("/api/companie/id", async (req, res) => {
     if(!user) {
         res.json({ success: false, message: "Bruker ble ikke funnet.", redirect: "/auth" })
         return
-    } else if (user.role == $Enums.Role.MEMBER) {
+    } else if (user.role == $Enums.Role.MEMBER || user.role == $Enums.Role.PARRENT) {
         res.json({ success: false, message: "Bruker er ikke manager.", redirect: "/" })
         return
     }
@@ -277,6 +332,71 @@ app.post("/api/companie/id", async (req, res) => {
         res.json({ success: true, data: companie })
         return
     }
+})
+
+app.post("/api/companie/edit", async (req, res) => {
+    const { companieId, name } = req.body
+    const token = req.cookies.token
+    const user = await findUserByToken(token)
+
+    if(!user) {
+        res.json({ success: false, message: "Bruker ble ikke funnet.", redirect: "/auth" })
+        return
+    } else if (user.role == $Enums.Role.MEMBER || user.role == $Enums.Role.PARRENT) {
+        res.json({ success: false, message: "Bruker er ikke manager.", redirect: "/" })
+        return
+    }
+
+    const companie = await editCompanie(companieId, name).catch((e) => {
+        console.log(e);
+        res.json({ success: false, message: "Kompaniet ble ikke oppdatert." })
+    })
+
+
+    res.json({ success: true, message: "Kompaniet ble oppdatert." })
+})
+
+app.post("/api/companie/delete", async (req, res) => {
+    const { companieId } = req.body
+    const token = req.cookies.token
+    const user = await findUserByToken(token)
+
+    if(!user) {
+        res.json({ success: false, message: "Bruker ble ikke funnet.", redirect: "/auth" })
+        return
+    } else if (user.role == $Enums.Role.MEMBER || user.role == $Enums.Role.PARRENT) {
+        res.json({ success: false, message: "Bruker er ikke manager.", redirect: "/" })
+        return
+    }
+
+    await deleteCompanie(companieId).catch((e) => {
+        console.log(e)
+        res.json({ success: false, message: "Kompaniet ble ikke slettet." })
+    })
+
+    res.json({ success: true, message: "Kompaniet ble slettet." })
+})
+
+app.get("/api/companie/token", async (req, res) => {
+    const token = req.cookies.token
+    const user = await findUserByToken(token)
+
+    if(!user) {
+        res.json({ success: false, message: "Bruker ble ikke funnet.", redirect: "/auth" })
+        return
+    } else if (user.role == $Enums.Role.MEMBER || user.role == $Enums.Role.PARRENT) {
+        res.json({ success: false, message: "Bruker er ikke manager.", redirect: "/" })
+        return
+    }
+
+    const companie = await findCompaniesByUserId(user.id)
+    if(!companie) {
+        res.json({ success: false, message: "Bruker har ikke tilgang til Kompaniet.", redirect: "/dashboard" })
+        return
+    }
+
+    res.json({ success: true, data: companie.companies })
+    return
 })
 
 /* Platoon api calls */
@@ -415,4 +535,29 @@ app.post("/api/platoon/delete", async (req, res) => {
 
     deletePlatoon(platoonId)
     res.json({ success: true, message: "Palatong ble slettet" });
+})
+
+/* Admin api calls */
+app.get("/api/admin/dashboard", async (req, res) => {
+    const token = req.cookies.token
+    const user = await findUserByToken(token)
+
+    if(!user) {
+        res.json({ success: false, message: "Bruker ble ikke funnet.", redirect: "/auth" });
+        return
+    } else if(user.role !== $Enums.Role.ADMIN) {
+        res.json({ success: false, message: "Bruker er ikke admin.", redirect: "/" });
+        return
+    }
+
+    const companies = await getAllCompanies()
+    const platoons = await getAllPlatoons()
+    const users = await getAllUsers()
+    const managers = await getAllManagers()
+    const members = await getAllMembers()
+    const parrents = await getAllParrents()    
+
+    res.json({ success: true, data: { companies, platoons, users, managers, members, parrents } });
+
+
 })

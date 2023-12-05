@@ -142,9 +142,57 @@ async function newPlatoon(companieId) {
 }
 
 async function newCompanie() {
-    
+    const wrapper = document.createElement("form")
+    wrapper.classList.add("newCompanie")
+
+    wrapper.innerHTML = `
+        <h3>Ny kompani</h3>
+        <input type="text" name="name" data-normal data-unset class="input" placeholder="Navn på kompani">
+        <div data-row data-gap>
+            <button type="submit" class="button" data-denied>Avbryt</button>
+            <button type="submit" class="button" data-accept>Opprett</button>
+        </div>
+    `
+
+    const outOfBound = document.createElement("div")
+    outOfBound.classList.add("outOfBound")
+
+    outOfBound.addEventListener("click", () => {
+        wrapper.remove()
+        outOfBound.remove()
+    })
+
+    wrapper.addEventListener("submit", async (e) => {
+        e.preventDefault()
+        const submitBtn = e.submitter
+        if (submitBtn.hasAttribute("data-denied")) {
+            wrapper.remove()
+            outOfBound.remove()
+            return
+        }
+        
+        const name = wrapper["name"].value
+        if (name.length < 1) return
+
+        const data = await request("/api/companie/create", {
+            name
+        })
+        
+        if (data.success === false) {
+            await alertPopup(data.message)
+            return
+        }
+
+        wrapper.remove()
+        outOfBound.remove()    
+    })
+
+    document.body.appendChild(outOfBound)
+    document.body.appendChild(wrapper)
+
 }
 
 async function logOut() {
     await fetch('/api/logout')
+    window.location.href = '/auth'
 }

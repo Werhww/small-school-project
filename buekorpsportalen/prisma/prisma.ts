@@ -43,6 +43,17 @@ export async function addPlatoonToUser(userId:number, platoonId:number) {
     })
 }
 
+export async function updateMember(userId:number, platoonId:number) {
+    return await prisma.member.update({
+        where: {
+            userId: userId
+        },
+        data: {
+            platoonId: platoonId
+        }
+    })
+}
+
 export async function addPersonalToUser(userId:number, personal:Personal) {
     return await prisma.user.update({
         where: {
@@ -260,6 +271,26 @@ export async function createCompanie(companie:Companie) {
     })
 }
 
+export async function editCompanie(id:number, name:string) {
+    return await prisma.companie.update({
+        where: {
+            id: id
+        },
+        data: {
+            name: name
+        }
+    })
+}
+
+export async function deleteCompanie(id:number) {
+    return await prisma.companie.delete({
+        where: {
+            id: id
+        }
+    })
+
+}
+
 export async function findCompanieById(id:number) {
     return await prisma.companie.findUnique({
         where: {
@@ -352,6 +383,17 @@ export async function findCompanieManagerById(companieId:number) {
 
 }
 
+export async function findCompaniesByUserId(userId:number) {
+    return await prisma.manager.findUnique({
+        where: {
+            userId: userId
+        },
+        select: {
+            companies: true
+        }
+    })
+}
+
 export async function createPlatoon(platoon:Platoon) {
     return await prisma.platoon.create({
         data: platoon
@@ -386,4 +428,45 @@ export async function findPlatoonDataForDelete(id:number) {
             members: true
         }
     })
+}
+
+/* Admin data fetchers */
+export async function getAllCompanies() {
+    return await prisma.companie.findMany()
+}
+
+export async function getAllPlatoons() {
+    return await prisma.platoon.findMany()
+}
+
+export async function getAllUsers() {
+    return await prisma.user.findMany({
+        include: {
+            personal: {
+                select: {
+                    firstName: true,
+                    lastName: true,
+                    birthDate: true,                             
+                    email: true,
+                    phone: true,
+                    picture: false,                           
+                    address: true,                           
+                    city: true,                          
+                    postalCode: true,                           
+                }
+            }
+        }
+    })
+}
+
+export async function getAllManagers() {
+    return await prisma.manager.findMany()
+}
+
+export async function getAllParrents() {
+    return await prisma.parrent.findMany()
+}
+
+export async function getAllMembers() {
+    return await prisma.member.findMany()
 }

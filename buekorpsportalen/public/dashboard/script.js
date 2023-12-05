@@ -45,22 +45,87 @@ function renderCompanie(companie) {
         .addEventListener("click", () => deleteCompanie(companie.id))
 }
 
-function editName(newName, id) {
-    console.log(newName,id)
+async function editName(newName, id) {
+    const data = await request("/api/companie/edit", {
+        name: newName,
+        companieId: id
+    })
+
+    if (data.success === false) {
+        await alertPopup(data.message)
+        return
+    }
+
 }
 
-
-async function deleteCompanie() {
+async function deleteCompanie(id) {
     const deletePopup = await alertPopup("Er du sikker på at du vil slette dette kompaniet?")
-    console.log(deletePopup)
     
     if(deletePopup === "close") return
     if(deletePopup === "accept") {
-        console.log("delete")
+        const data = await request("/api/companie/delete", {
+            companieId: id
+        })
+    
+        if (data.success === false) {
+            await alertPopup(data.message)
+            return
+        }
     }
 }
 
-renderCompanie({
-    name: "Hjørnebordet",
-    id: 2
-})
+function newCompaniePlaceholder() {
+    const wrapper = document.createElement("div")
+    wrapper.classList.add("companie")
+
+    wrapper.innerHTML = `
+        <div class="folders">
+            <div class="newFolder">
+                <div data-top></div>
+                <div data-bottom>
+                    <img src="../icons/add.svg">
+                </div>
+            </div>
+            <div class="newFolder">
+                <div data-top></div>
+                <div data-bottom>
+                    <img src="../icons/add.svg">
+                </div>
+            </div>
+            <div class="newFolder">
+                <div data-top></div>
+                <div data-bottom>
+                    <img src="../icons/add.svg">
+                </div>
+            </div>
+        </div>
+        <h4>Ny kompani</h4>
+    `
+
+    wrapper.addEventListener("click", () => {
+        newCompanie()
+    })
+
+
+    companieContainer.appendChild(wrapper)
+}
+
+async function fetchManagersCompanies() {
+    const res = await fetch("/api/companie/token")
+    const data = await res.json()
+
+    if (data.success === false) {
+        await alertPopup(data.message)
+        window.location.href = data.redirect
+        return
+    }
+
+    for(let i = 0; i < data.data.length; i++) {
+        renderCompanie(data.data[i])
+    }
+
+    newCompaniePlaceholder()
+}
+
+
+fetchManagersCompanies()
