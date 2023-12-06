@@ -11,6 +11,8 @@
     
     width: fit-content;
     cursor: pointer;
+
+    position: relative;
 }
 
 .folders {
@@ -38,19 +40,19 @@
     z-index: 3;
 }
 
-.folders:hover > div:nth-child(1) {
+.folderHover > .folders > div:nth-child(1) {
     top: 8px;
     left: -35px;
     rotate: -15deg;
 }
 
-.folders:hover > div:nth-child(2) {
+.folderHover > .folders > div:nth-child(2) {
     top: 26px;
     left: 20px;
     rotate: 12deg;
 }
 
-.folders:hover > div:nth-child(3) {
+.folderHover > .folders > div:nth-child(3) {
     top: 58px;
     left: -15px;
     rotate: -8deg;
@@ -136,6 +138,11 @@
     text-align: center;
 }
 
+.companie > h4 {
+    width: 12rem;
+    text-align: center;
+}
+
 .newFolder {
     display: flex;
     flex-direction: column;
@@ -190,4 +197,25 @@
 
 .newFolder:hover > div[data-bottom] > img {
     filter: var(--svg-contrast);
+}
+
+.mobileCover {
+    display: none;
+
+}
+
+@media only screen and (max-width: 900px) {
+    #companieContainer {
+        padding-bottom: 4rem;
+    }
+
+    .mobileCover {
+        display: block;
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 1000;
+        width: 12rem;
+        height: 12.813rem;   
+    }
 }

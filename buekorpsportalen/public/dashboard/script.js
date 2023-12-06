@@ -5,20 +5,20 @@ function renderCompanie(companie) {
     wrapper.classList.add("companie")
 
     wrapper.innerHTML = `
-        <div class="folders">
+        <div class="folders" id="folders${companie.id, companie.name}" >
             <div class="folder">
                 <div data-top></div>
                 <div data-bottom></div>
             </div>
-            <div class="folder">
+            <div class="folder" id="editBottom${companie.id, companie.name}">
                 <div data-top></div>
-                <div data-bottom id="editBottom${companie.id, companie.name}">
+                <div data-bottom>
                     <img src="../icons/edit.svg">
                 </div>
             </div>
-            <div class="folder">
+            <div class="folder" id="deleteBottom${companie.id, companie.name}">
                 <div data-top></div>
-                <div data-bottom id="deleteBottom${companie.id, companie.name}">
+                <div data-bottom>
                     <img src="../icons/delete.svg">
                 </div>
             </div>
@@ -34,9 +34,29 @@ function renderCompanie(companie) {
         window.location.href = `/dashboard/companie?id=${companie.id}`
     })
 
-    wrapper.appendChild(title)
+    
+
+    const mobileCover = document.createElement("div")
+    mobileCover.classList.add("mobileCover")
+    mobileCover.addEventListener("click", () => {
+        mobileCover.style.display = "none"
+        wrapper.classList.add("folderHover")
+    })
+
+    wrapper.append(title, mobileCover)
 
     companieContainer.appendChild(wrapper)
+
+    document.getElementById(`folders${companie.id, companie.name}`)
+        .addEventListener("mouseover", (e) => {
+            wrapper.classList.add("folderHover")
+        })
+
+    document.getElementById(`folders${companie.id, companie.name}`)
+        .addEventListener("mouseout", () => {
+            wrapper.classList.remove("folderHover")
+            mobileCover.style.display = "flex"
+        })
 
     document.getElementById(`editBottom${companie.id, companie.name}`)
         .addEventListener("click", () => title.focus())
@@ -104,6 +124,14 @@ function newCompaniePlaceholder() {
 
     wrapper.addEventListener("click", () => {
         newCompanie()
+    })
+
+    wrapper.addEventListener("mouseover", () => {
+        wrapper.classList.add("folderHover")
+    })
+
+    wrapper.addEventListener("mouseout", () => {
+        wrapper.classList.remove("folderHover")
     })
 
 

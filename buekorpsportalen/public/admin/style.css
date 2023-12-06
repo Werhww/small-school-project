@@ -1,3 +1,61 @@
 .companies {
-    
+    display: flex;
+    flex-direction: column;
 }
+
+.companie > div:nth-child(1){
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+
+}
+
+
+.companie > div:nth-child(1) input{
+    background-color: transparent;
+    outline: none;
+    border: none;
+
+    width: 15rem;
+
+    font-size: 1.5rem;
+    color: var(--contrast);
+}
+
+.companieButtons {
+    display: flex;
+    width: 20rem;
+    gap: 1rem;
+}
+
+.companieButtons button {
+    width: 100%;
+    outline: none;
+
+    background-color: var(--primary);
+    border-radius: var(--border-radius);
+    padding: 0.2rem 0;
+
+    transition: all 0.2s ease-in-out;
+}
+
+.companieButtons button:nth-child(1) {
+    border: solid 2px var(--hover-light);
+}
+.companieButtons button:nth-child(2) {
+    border: solid 2px var(--denied);
+}
+.companieButtons button:nth-child(3) {
+    border: solid 2px var(--accept);
+}
+
+.companieButtons button:nth-child(1):hover {
+    border: solid 2px var(--light);
+}
+.companieButtons button:nth-child(2):hover  {
+    border: solid 2px var(--denied-hover);
+}
+.companieButtons button:nth-child(3):hover  {
+    border: solid 2px var(--accept-hover);
+}
+

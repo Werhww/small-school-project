@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body data-column data-big-gap>
-    <div data-row data-big-gap data-align-baseline>
+    <div class="mobileRow" data-row data-big-gap data-align-baseline>
         <h1>Admin Dashboard</h1>
         <div data-row data-gap>
             <h5 onclick="logOut()" data-undeline data-hover>Logg ut</h5>
@@ -20,8 +20,15 @@
 
     <h3>Kompanier</h3>
     <div class="companies" id="companies">
-        <div >
-
+        <div class="companie">
+            <div>
+                <input type="text" value="Hjørnebordet" disabled>
+                <div class="companieButtons">
+                    <button>Rediger</button>
+                    <button>Slett</button>
+                    <button>Legg til Peletong</button>
+                </div>
+            </div>
         </div>
     </div>
 

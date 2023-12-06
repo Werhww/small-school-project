@@ -5,6 +5,7 @@ import { sha256 } from "./utils";
 import cookieParser from "cookie-parser";
 import { $Enums, Companie, Personal, Platoon, User } from "@prisma/client";
 import { addImageToUser, addManagerToCompanie, addParrentToUser, addPersonalToUser, addPlatoonToUser, createCompanie, createManager, createParrent, createPlatoon, createUser, deleteCompanie, deletePlatoon, editCompanie, editPlatoon, findCompanieById, findCompanieManagerById, findCompaniesByUserId, findManagerByUserId, findManagersCompanieById, findManagersPersonalByCompanieId, findPersonalByUserId, findPictureByPersonalId, findPlatoonById, findPlatoonDataForDelete, findPlatoonIdByUserId, findUserById, findUserByPassword, findUserByToken, getAllCompanies, getAllManagers, getAllMembers, getAllParrents, getAllPlatoons, getAllUsers, updateMember, updatePersonal } from "./prisma/prisma";
+import { get } from "http";
 
 const app = express()
 const upload = multer()
@@ -375,8 +376,8 @@ app.post("/api/companie/delete", async (req, res) => {
     })
 
     res.json({ success: true, message: "Kompaniet ble slettet." })
-})
-
+}) 
+ 
 app.get("/api/companie/token", async (req, res) => {
     const token = req.cookies.token
     const user = await findUserByToken(token)
@@ -387,11 +388,16 @@ app.get("/api/companie/token", async (req, res) => {
     } else if (user.role == $Enums.Role.MEMBER || user.role == $Enums.Role.PARRENT) {
         res.json({ success: false, message: "Bruker er ikke manager.", redirect: "/" })
         return
+    } else if (user.role == $Enums.Role.ADMIN) {
+        const companies = await getAllCompanies()
+        res.json({ success: true, data: companies })
+        return
     }
+
 
     const companie = await findCompaniesByUserId(user.id)
     if(!companie) {
-        res.json({ success: false, message: "Bruker har ikke tilgang til Kompaniet.", redirect: "/dashboard" })
+        res.json({ success: true, message: "Bruker har har ingen kopmanier."})
         return
     }
 
