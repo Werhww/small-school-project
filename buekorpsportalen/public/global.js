@@ -71,7 +71,7 @@ function alertPopup(message) {
     return alertResponse
 }
 
-async function newPlatoon(companieId) {
+async function newPlatoon(companieId, reload = true) {
     const wrapper = document.createElement("div")
     wrapper.classList.add("newPlatoon")
 
@@ -103,23 +103,31 @@ async function newPlatoon(companieId) {
     create.innerText = "Opprett"
     create.classList.add("button")
     create.dataset.accept = ""
+
+    let alertResolve = null
+
+    const alertResponse = new Promise((resolve, reject) => {
+        alertResolve = resolve
+    })
+
     create.addEventListener("click", async () => {
         const name = input.value
         if (name.length < 1) return
 
-        const res = await request("/api/platoon/create", {
+        const data = await request("/api/platoon/create", {
             name,
             companieId: Number(companieId)
         })
 
-        if (res.success === false) {
-            await alertPopup(res.message)
-            return
+        if (data.success === false) {
+            await alertPopup(data.message)
+            return  alertResolve(data)
         }
 
         wrapper.remove()
         outOfBound.remove()
-        location.reload()
+        alertResolve(data)
+        if(reload) location.reload()
     })
 
     buttons.appendChild(cancel)
@@ -139,6 +147,8 @@ async function newPlatoon(companieId) {
 
     document.body.appendChild(outOfBound)
     document.body.appendChild(wrapper)
+
+    return alertResponse
 }
 
 async function newCompanie() {
@@ -157,9 +167,16 @@ async function newCompanie() {
     const outOfBound = document.createElement("div")
     outOfBound.classList.add("outOfBound")
 
+    let alertResolve = null
+
+    const alertResponse = new Promise((resolve, reject) => {
+        alertResolve = resolve
+    })
+
     outOfBound.addEventListener("click", () => {
         wrapper.remove()
         outOfBound.remove()
+        alertResolve()
     })
 
     wrapper.addEventListener("submit", async (e) => {
@@ -168,6 +185,7 @@ async function newCompanie() {
         if (submitBtn.hasAttribute("data-denied")) {
             wrapper.remove()
             outOfBound.remove()
+            alertResolve()
             return
         }
         
@@ -180,9 +198,10 @@ async function newCompanie() {
         
         if (data.success === false) {
             await alertPopup(data.message)
-            return
+            return alertResolve(data)
         }
 
+        alertResolve(data)
         wrapper.remove()
         outOfBound.remove()    
     })
@@ -190,6 +209,180 @@ async function newCompanie() {
     document.body.appendChild(outOfBound)
     document.body.appendChild(wrapper)
 
+    return alertResponse
+}
+
+async function newUser(role) {
+    const wrapper = document.createElement("form")
+    wrapper.classList.add("newCompanie")
+
+    wrapper.innerHTML = `
+        <h3>Ny Bruker</h3>
+        <input type="text" name="password" data-normal data-unset class="input" placeholder="Uniqe Passord">
+        <div data-row data-gap>
+            <button type="submit" class="button" data-denied>Avbryt</button>
+            <button type="submit" class="button" data-accept>Opprett</button>
+        </div>
+    `
+
+    const outOfBound = document.createElement("div")
+    outOfBound.classList.add("outOfBound")
+
+    let alertResolve = null
+
+    const alertResponse = new Promise((resolve, reject) => {
+        alertResolve = resolve
+    })
+
+    outOfBound.addEventListener("click", () => {
+        wrapper.remove()
+        outOfBound.remove()
+        alertResolve({ success: false })
+    })
+
+    wrapper.addEventListener("submit", async (e) => {
+        e.preventDefault()
+
+        const submitBtn = e.submitter
+
+        if (submitBtn.hasAttribute("data-denied")) {
+            wrapper.remove()
+            outOfBound.remove()
+            return alertResolve({ success: false })
+        }
+        
+        const password = wrapper["password"].value
+        if (password.length < 1) return
+
+        wrapper.remove()
+        outOfBound.remove()
+ 
+        const data = await request("/api/user/create", {
+            password: password,
+            role: role
+        })
+        
+        if (data.success === false) {
+            await alertPopup(data.message)
+            return alertResolve(data)
+        }
+
+        alertResolve({ ...data, password })
+    })
+
+    document.body.appendChild(outOfBound)
+    document.body.appendChild(wrapper)
+
+    return alertResponse
+}
+
+async function editPersonal(member) {
+    const wrapper = document.createElement("form")
+    wrapper.classList.add("editPersonalInfo")
+
+    let personal = member.personal
+
+    if(personal) {
+        const data = await request("/api/user/personal/id", {
+            userId: member.id
+        })
+
+        if (data.success === true) {
+            personal = data.data
+
+            wrapper.innerHTML = `
+                <h3>Oppdater personlig info</h3>
+                <input value="${personal.firstName}" type="text" required name="firstName" data-normal data-unset class="input" placeholder="fornavn">
+                <input value="${personal.lastName}" type="text" required name="lastName" data-normal data-unset class="input" placeholder="etternavn">
+                <input value="${personal.email}" type="text" required name="email" data-normal data-unset class="input" placeholder="epost">
+                <input value="${personal.phone}" type="text" required name="phone" data-normal data-unset class="input" placeholder="telefon" maxlength="8">
+                <input value="${personal.birthDate.split("T")[0]}" type="date" required name="birthDate" data-normal data-unset class="input onlyNumber" placeholder="bursdag">
+                <input value="${personal.address}" type="text" required name="address" data-normal data-unset class="input" placeholder="addresse">
+                <input value="${personal.city}" type="text" required name="city" data-normal data-unset class="input" placeholder="by">
+                <input value="${personal.postalCode}" type="text" required name="postalCode" data-normal data-unset class="input onlyNumber" placeholder="postnummer">
+
+                <div data-row data-gap id="editPersonalButtons" >
+                    <button type="button" class="button" data-denied>Avbryt</button>
+                    <button type="submit" class="button" data-accept>Endre</button>
+                </div>
+            `
+        } 
+    } else {
+        wrapper.innerHTML = `
+        <h3>Oppdater personlig info</h3>
+            <input type="text" required name="firstName" data-normal data-unset class="input" placeholder="fornavn">
+            <input type="text" required name="lastName" data-normal data-unset class="input" placeholder="etternavn">
+            <input type="text" required name="email" data-normal data-unset class="input" placeholder="epost">
+            <input type="text" required name="phone" data-normal data-unset class="input" placeholder="telefon" maxlength="8">
+            <input type="date" required name="birthDate" data-normal data-unset class="input onlyNumber" placeholder="bursdag">
+            <input type="text" required name="address" data-normal data-unset class="input" placeholder="addresse">
+            <input type="text" required name="city" data-normal data-unset class="input" placeholder="by">
+            <input type="text" required name="postalCode" data-normal data-unset class="input onlyNumber" placeholder="postnummer">
+
+            <div data-row data-gap id="editPersonalButtons" >
+                <button type="button" class="button" data-denied>Avbryt</button>
+                <button type="submit" class="button" data-accept>Endre</button>
+            </div>
+        ` 
+    }
+
+    const outOfBound = document.createElement("div")
+    outOfBound.classList.add("outOfBound")
+
+    let alertResolve = null
+
+    const alertResponse = new Promise((resolve, reject) => {
+        alertResolve = resolve
+    })
+
+    outOfBound.addEventListener("click", () => {
+        wrapper.remove()
+        outOfBound.remove()
+        alertResolve({ success: false })
+    })
+    
+    wrapper.addEventListener("submit", async (e) => {
+        e.preventDefault()
+
+        const formData = new FormData(wrapper)
+        const formDataEntries = Object.fromEntries(formData.entries())
+
+        wrapper.remove()
+        outOfBound.remove()
+ 
+        const data = await request("/api/user/personal/updateWithId", {
+            userId: member.id,
+            personalBody: {
+                ...formDataEntries,
+                birthDate: new Date(formDataEntries.birthDate).toISOString()
+            }
+        })
+        
+        if (data.success === false) {
+            await alertPopup(data.message)
+            return alertResolve(data)
+        }
+
+        alertResolve({ ...data, personal: formDataEntries})
+    })
+
+    document.body.append(outOfBound, wrapper)
+
+    const onlyNumberInputs = document.querySelectorAll(".onlyNumber")
+
+    onlyNumberInputs.forEach(input => {
+        input.addEventListener("keydown", isNumber)
+    })
+
+    document.getElementById("editPersonalButtons").children[0].addEventListener("click", () => {
+        wrapper.remove()
+        outOfBound.remove()
+        
+        alertResolve({ success: false })
+    })
+
+
+    return alertResponse
 }
 
 async function logOut() {

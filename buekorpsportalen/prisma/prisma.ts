@@ -7,6 +7,15 @@ export async function createUser(user:User) {
     })
 }
 
+export async function deleteUser(id:number) {
+    return await prisma.user.delete({
+        where: {
+            id: id
+        }
+    })
+
+}
+
 export async function createManager(userId:number) {
     return await prisma.manager.create({
         data: {
@@ -460,7 +469,11 @@ export async function getAllUsers() {
 }
 
 export async function getAllManagers() {
-    return await prisma.manager.findMany()
+    return await prisma.manager.findMany({
+        include: {
+            companies: true
+        }
+    })
 }
 
 export async function getAllParrents() {

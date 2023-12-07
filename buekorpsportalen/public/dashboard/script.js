@@ -75,7 +75,6 @@ async function editName(newName, id) {
         await alertPopup(data.message)
         return
     }
-
 }
 
 async function deleteCompanie(id) {

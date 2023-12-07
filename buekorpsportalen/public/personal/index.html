@@ -24,9 +24,9 @@
             <div data-column data-gap>
                 <h4 data-bold>Personinfo</h4>
                 <div class="personal" data-row data-medium-gap>
-                    <input type="text" name="firstName" maxlength="25" placeholder="fornavn" data-normal>
-                    <input type="text" name="lastName" maxlength="25" placeholder="etternavn" data-normal>
-                    <input type="date" name="birthDate" maxlength="25" placeholder="fødselsdag" data-normal>
+                    <input type="text" required name="firstName" maxlength="25" placeholder="fornavn" data-normal>
+                    <input type="text" required name="lastName" maxlength="25" placeholder="etternavn" data-normal>
+                    <input type="date" required name="birthDate" maxlength="25" placeholder="fødselsdag" data-normal>
                 </div>
             </div>
             <div data-row data-medium-gap>
@@ -34,16 +34,16 @@
                     <div data-column data-gap>
                         <h4 data-bold>Kontaktinfo</h4>
                         <div class="contact" data-row data-medium-gap>
-                            <input type="text" name="email" placeholder="epost" data-normal>
-                            <input type="text" class="onlyNumber" maxlength="8" name="phone" placeholder="telefon" data-normal>
+                            <input required type="text" name="email" placeholder="epost" data-normal>
+                            <input required type="text" class="onlyNumber" maxlength="8" name="phone" placeholder="telefon" data-normal>
                         </div>
                     </div>
                     <div data-column data-gap>
                         <h4 data-bold>Adresse</h4>
                         <div class="adress" data-row data-medium-gap>
-                            <input type="text" name="address" placeholder="adresse" data-normal>
-                            <input type="text" name="city" placeholder="by" data-normal>
-                            <input type="text" class="onlyNumber" maxlength="4" name="postalCode" placeholder="postnummer" data-normal>
+                            <input required type="text" name="address" placeholder="adresse" data-normal>
+                            <input required type="text" name="city" placeholder="by" data-normal>
+                            <input required type="text" class="onlyNumber" maxlength="4" name="postalCode" placeholder="postnummer" data-normal>
                         </div>
                     </div>
                 </div>

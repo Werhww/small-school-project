@@ -1,6 +1,7 @@
 .companies {
     display: flex;
     flex-direction: column;
+    gap: 3rem;
 }
 
 .companie > div:nth-child(1){
@@ -11,24 +12,23 @@
 }
 
 
-.companie > div:nth-child(1) input{
+.companie input{
     background-color: transparent;
     outline: none;
     border: none;
 
-    width: 15rem;
+    width: 10rem;
 
     font-size: 1.5rem;
     color: var(--contrast);
 }
 
-.companieButtons {
+.buttons {
     display: flex;
-    width: 20rem;
     gap: 1rem;
 }
 
-.companieButtons button {
+.buttons button {
     width: 100%;
     outline: none;
 
@@ -37,25 +37,59 @@
     padding: 0.2rem 0;
 
     transition: all 0.2s ease-in-out;
+    min-height: 2.625rem;
+    width: 6rem;
 }
 
-.companieButtons button:nth-child(1) {
+.buttons > .normal {
     border: solid 2px var(--hover-light);
 }
-.companieButtons button:nth-child(2) {
+.buttons > .red {
     border: solid 2px var(--denied);
 }
-.companieButtons button:nth-child(3) {
+.buttons .green {
     border: solid 2px var(--accept);
 }
 
-.companieButtons button:nth-child(1):hover {
+.buttons .normal:hover {
     border: solid 2px var(--light);
 }
-.companieButtons button:nth-child(2):hover  {
+.buttons .red:hover  {
     border: solid 2px var(--denied-hover);
 }
-.companieButtons button:nth-child(3):hover  {
+.buttons .green:hover  {
     border: solid 2px var(--accept-hover);
 }
 
+
+.platoons {
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+
+    padding-left: 2rem;
+}
+
+.platoon, .userList {
+    gap: 1rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.mainContent, .userList > div  {
+    gap: 1rem;
+    display: flex;
+    align-items: center;
+}
+
+.userList {
+    padding-left: 1rem;
+}
+
+.userList > div > p {
+    width: 15rem;
+}
+
+.hidden {
+    display: none;
+}

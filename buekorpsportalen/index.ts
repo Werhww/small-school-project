@@ -4,7 +4,7 @@ import { join } from "path"
 import { sha256 } from "./utils";
 import cookieParser from "cookie-parser";
 import { $Enums, Companie, Personal, Platoon, User } from "@prisma/client";
-import { addImageToUser, addManagerToCompanie, addParrentToUser, addPersonalToUser, addPlatoonToUser, createCompanie, createManager, createParrent, createPlatoon, createUser, deleteCompanie, deletePlatoon, editCompanie, editPlatoon, findCompanieById, findCompanieManagerById, findCompaniesByUserId, findManagerByUserId, findManagersCompanieById, findManagersPersonalByCompanieId, findPersonalByUserId, findPictureByPersonalId, findPlatoonById, findPlatoonDataForDelete, findPlatoonIdByUserId, findUserById, findUserByPassword, findUserByToken, getAllCompanies, getAllManagers, getAllMembers, getAllParrents, getAllPlatoons, getAllUsers, updateMember, updatePersonal } from "./prisma/prisma";
+import { addImageToUser, addManagerToCompanie, addParrentToUser, addPersonalToUser, addPlatoonToUser, createCompanie, createManager, createParrent, createPlatoon, createUser, deleteCompanie, deletePlatoon, deleteUser, editCompanie, editPlatoon, findCompanieById, findCompanieManagerById, findCompaniesByUserId, findManagerByUserId, findManagersCompanieById, findManagersPersonalByCompanieId, findPersonalByUserId, findPictureByPersonalId, findPlatoonById, findPlatoonDataForDelete, findPlatoonIdByUserId, findUserById, findUserByPassword, findUserByToken, getAllCompanies, getAllManagers, getAllMembers, getAllParrents, getAllPlatoons, getAllUsers, updateMember, updatePersonal } from "./prisma/prisma";
 import { get } from "http";
 
 const app = express()
@@ -81,7 +81,6 @@ app.get("/api/auth/admin", async (req, res) => {
 })
 
 app.get("/api/logout", async (req, res) => {
-    console.log("logout");
     res.clearCookie("token")
     res.redirect("/auth")
 })
@@ -108,7 +107,7 @@ app.post("/api/user/create", async (req, res) => {
             await createParrent(user.id)
         }
         
-        res.json({ success: true, message: "Brukeren ble opprettet." });
+        res.json({ success: true, message: "Brukeren ble opprettet.", data: user  });
     }
 })
 
@@ -131,6 +130,17 @@ app.get("/api/user/personal/token", async (req, res) => {
 
 })
 
+app.post("/api/user/personal/id", async (req, res) => {
+    const { userId } = req.body
+    const personal = await findPersonalByUserId(userId)
+
+    if(personal) {
+        res.json({ success: true, data: personal });
+    } else {
+        res.json({ success: false, message: "Brukeren har ikke personlig informasjon." });
+    }
+})
+
 app.post("/api/user/personal/update", async (req, res) => {
     const body = req.body as Personal
     const token = req.cookies.token 
@@ -149,6 +159,38 @@ app.post("/api/user/personal/update", async (req, res) => {
         } 
 
         await addPersonalToUser(user.id, body).catch((e) => {
+            console.log(e);
+            res.json({ success: false, message: "Epost eller mobil nummer er alerede i bruk" });
+        })
+
+        res.json({ success: true, message: "Brukeren ble oppdatert." });
+    } else {
+        res.json({ success: false, message: "Brukeren eksisterer ikke." });
+    }
+})
+
+app.post("/api/user/personal/updateWithId", async (req, res) => {
+    const { userId, personalBody } = req.body as { userId: number, personalBody: Personal }
+    const token = req.cookies.token 
+    const user = await findUserByToken(token);
+
+    if (user) {
+        if(user.role == $Enums.Role.MEMBER || user.role == $Enums.Role.PARRENT) {
+            res.json({ success: false, message: "Brukeren har ikke tilgang til dette." });
+            return
+        }
+        
+        const personal = await findPersonalByUserId(userId)
+        if (personal) {
+            updatePersonal(personal.id, personalBody).catch((e) => {
+                console.log(e);
+                res.json({ success: false, message: "Epost eller mobil nummer er alerede i bruk" });
+            })    
+
+            return res.json({ success: true, message: "Brukeren ble oppdatert." });
+        } 
+
+        await addPersonalToUser(userId, personalBody).catch((e) => {
             console.log(e);
             res.json({ success: false, message: "Epost eller mobil nummer er alerede i bruk" });
         })
@@ -211,8 +253,9 @@ app.get("/api/user/image/:id", async (req, res) => {
 })
 
 app.post("/api/user/connectToParrent", async (req, res) => {
+    const token = req.cookies.token
     const { userId, parrentId } = req.body
-    const user = await findUserById(userId);  
+    const user = await findUserByToken(token);  
 
 
     if (user) {
@@ -224,13 +267,14 @@ app.post("/api/user/connectToParrent", async (req, res) => {
         await addParrentToUser(userId, parrentId);
         res.json({ success: true, message: "Brukeren ble oppdatert." });
     } else {
-        res.json({ success: false, message: "Brukeren eksisterer ikke." });
+        res.json({ success: false, message: "Brukeren eksisterer ikke.", redirect: "/auth" });
     }
 })
 
 app.post("/api/user/connectToPlatoon", async (req, res) => {
+    const token = req.cookies.token
     const { userId, platoonId } = req.body
-    const user = await findUserById(userId);
+    const user = await findUserByToken(token);
 
     if (user) {
         if(user.role == $Enums.Role.MEMBER || user.role == $Enums.Role.PARRENT) {
@@ -262,6 +306,24 @@ app.post("/api/user/changePlatoon", async (req, res) => {
     }
 })
 
+app.post("/api/user/delete", async (req, res) => {
+    const token = req.cookies.token
+    const { userId } = req.body
+    const user = await findUserByToken(token);
+
+    if (user) {
+        if(user.role == $Enums.Role.MEMBER || user.role == $Enums.Role.PARRENT) {
+            res.json({ success: false, message: "Brukeren har ikke tilgang til dette." });
+            return
+        }
+
+        await deleteUser(userId);
+        res.json({ success: true, message: "Brukeren ble oppdatert." });
+    } else {
+        res.json({ success: false, message: "Brukeren eksisterer ikke." });
+    }
+})
+
 /* Companie api calls */
 app.post("/api/companie/create", async (req, res) => {
     const body = req.body as Companie
@@ -285,7 +347,7 @@ app.post("/api/companie/create", async (req, res) => {
         await addManagerToCompanie(companie.id, manager.id)
     }
 
-    res.json({ success: true, message: "Kompaniet ble opprettet.", data: { companie } });
+    res.json({ success: true, message: "Kompaniet ble opprettet.", data: companie });
 })
 
 app.post("/api/companie/manager/add", async (req, res) => {
@@ -415,7 +477,7 @@ app.post("/api/platoon/create", async (req, res) => {
     })
 
     if(!platoon) return
-    res.json({ success: true, message: "Palaton ble opprettet." });
+    res.json({ success: true, message: "Palaton ble opprettet.", data: platoon });
 })
 
 app.get("/api/platoon/token", async (req, res) => { 

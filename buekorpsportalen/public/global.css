@@ -319,14 +319,16 @@ input[type="number"]::-webkit-inner-spin-button {
 /* Button */
 .button {
     transition: all 0.2s ease-in-out;
+    cursor: pointer;
 
     border: none;
     outline: none;
 
     height: var(--box-height);
     border-radius: var(--border-radius);
+    border: var(--border-light);
 
-    background-color: var(--secondary);
+    background-color: var(--primary);
     color: var(--contrast);
 
     font-size: 1.5rem;
@@ -336,8 +338,7 @@ input[type="number"]::-webkit-inner-spin-button {
 }
 
 .button:hover {
-    cursor: pointer;
-    background-color: var(--secondary);
+    border: var(--border);
 }
 
 .button:focus {
@@ -346,18 +347,22 @@ input[type="number"]::-webkit-inner-spin-button {
 
 .button[data-denied] {
     background-color: var(--denied);
+    border: none;
 }
 
 .button[data-denied]:hover {
     background-color: var(--denied-hover);
+    border: none;
 }
 
 .button[data-accept] {
     background-color: var(--accept);
+    border: none;
 }
 
 .button[data-accept]:hover {
     background-color: var(--accept-hover);
+    border: none;
 }
 
 .alert {
@@ -429,27 +434,6 @@ input[type="number"]::-webkit-inner-spin-button {
     z-index: 88;
 }
 
-.newPlatoon {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-
-    position: fixed;
-    top: 30%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 100;
-
-    max-width: 20rem;
-    width: 20rem;
-    height: min-content;
-
-    padding: 1.5rem 1.5rem;
-
-    background-color: var(--primary);
-    border-radius: var(--border-radius);
-    border: var(--border);
-}
 
 .newCompanie {
     z-index: 1000;
@@ -467,8 +451,26 @@ input[type="number"]::-webkit-inner-spin-button {
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
+}
 
+.editPersonalInfo {
+    z-index: 1000;
 
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
+    background-color: var(--primary);
+    border-radius: var(--border-radius);
+    border: var(--border);
+    padding: 1.5rem 1.5rem;
+    
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+
+    width: 25rem;
 }
 
 @media only screen and (max-width: 900px) {
