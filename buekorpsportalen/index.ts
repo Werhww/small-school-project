@@ -4,8 +4,7 @@ import { join } from "path"
 import { sha256 } from "./utils";
 import cookieParser from "cookie-parser";
 import { $Enums, Companie, Personal, Platoon, User } from "@prisma/client";
-import { addImageToUser, addManagerToCompanie, addParrentToUser, addPersonalToUser, addPlatoonToUser, createCompanie, createManager, createParrent, createPlatoon, createUser, deleteCompanie, deletePlatoon, deleteUser, editCompanie, editPlatoon, findCompanieById, findCompanieManagerById, findCompaniesByUserId, findManagerByUserId, findManagersCompanieById, findManagersPersonalByCompanieId, findPersonalByUserId, findPictureByPersonalId, findPlatoonById, findPlatoonDataForDelete, findPlatoonIdByUserId, findUserById, findUserByPassword, findUserByToken, getAllCompanies, getAllManagers, getAllMembers, getAllParrents, getAllPlatoons, getAllUsers, updateMember, updatePersonal } from "./prisma/prisma";
-import { get } from "http";
+import { addImageToUser, addManagerToCompanie, addParrentToUser, addPersonalToUser, addPlatoonToUser, createCompanie, createManager, createParrent, createPlatoon, createUser, deleteCompanie, deletePlatoon, deleteUser, editCompanie, editPlatoon, findCompanieById, findCompanieManagerById, findCompaniesByManagerId, findCompaniesByUserId, findManagerByUserId, findManagersCompanieById, findManagersPersonalByCompanieId, findPersonalByUserId, findPictureByPersonalId, findPlatoonById, findPlatoonDataForDelete, findPlatoonIdByUserId, findUserById, findUserByPassword, findUserByToken, getAllCompanies, getAllManagers, getAllMembers, getAllParrents, getAllPlatoons, getAllUsers, removeCompanieFromManager, updateMember, updatePersonal } from "./prisma/prisma";
 
 const app = express()
 const upload = multer()
@@ -52,7 +51,7 @@ app.post("/api/auth", async (req, res) => {
             res.json({ success: true, message: "Brukeren ble funnet.", redirect: "/" });
             return
         } else {
-            res.json({ success: true, message: "Brukeren ble funnet.", redirect: "/testing" });
+            res.json({ success: true, message: "Brukeren ble funnet.", redirect: "/admin" });
             return
         }
     } else {
@@ -628,4 +627,70 @@ app.get("/api/admin/dashboard", async (req, res) => {
     res.json({ success: true, data: { companies, platoons, users, managers, members, parrents } });
 
 
+})
+
+app.get("/api/admin/companies", async (req, res) => {
+    const token = req.cookies.token
+    const user = await findUserByToken(token)
+
+    if(!user) {
+        res.json({ success: false, message: "Bruker ble ikke funnet.", redirect: "/auth" });
+        return
+    } else if(user.role !== $Enums.Role.ADMIN) {
+        res.json({ success: false, message: "Bruker er ikke admin.", redirect: "/" });
+        return
+    }
+
+    const companies = await getAllCompanies()
+
+    res.json({ success: true, data: companies });
+
+
+})
+
+app.post("/api/admin/managerCompanies", async (req, res) => {
+    const token = req.cookies.token
+    const { userId } = req.body
+
+    const user = await findUserByToken(token)
+ 
+    if(!user) {
+        res.json({ success: false, message: "Bruker ble ikke funnet.", redirect: "/auth" })
+        return
+    } else if (user.role !== $Enums.Role.ADMIN) {
+        res.json({ success: false, message: "Bruker er ikke Admin.", redirect: "/" })
+        return
+    }
+
+
+    const manager = await findManagerByUserId(userId)
+
+    if(!manager) {
+        res.json({ success: false, message: "Bruker mangler manager data.", redirect: "/dashboard" })
+        return
+    } else {
+        const companieManagers = await findCompaniesByManagerId(manager.id);
+
+        res.json({ success: true, data: companieManagers })
+        return
+    }
+})
+ 
+app.post("/api/admin/manager/removeCompanie", async (req, res) => {
+    const token = req.cookies.token
+    const { managerId, companieId } = req.body
+
+    const user = await findUserByToken(token)
+ 
+    if(!user) {
+        res.json({ success: false, message: "Bruker ble ikke funnet.", redirect: "/auth" })
+        return
+    } else if (user.role !== $Enums.Role.ADMIN) {
+        res.json({ success: false, message: "Bruker er ikke Admin.", redirect: "/" })
+        return
+    }
+
+
+    const manager = await removeCompanieFromManager(managerId, companieId)
+    res.json({ success: true })
 })

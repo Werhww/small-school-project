@@ -90,6 +90,151 @@
     width: 15rem;
 }
 
+.roleLists > div {
+    box-sizing: border-box;
+    padding: 0.5rem;
+    border: var(--border-light);
+    border-radius: var(--border-radius);
+}
+
 .hidden {
-    display: none;
+    display: none!important;
+}
+
+.changeCompanie {
+    position: fixed;
+    top: 30%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1000;
+
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+
+    background-color: var(--primary);
+    border-radius: var(--border-radius);
+    border: var(--border);
+    padding: 1rem;
+
+    width: 20rem;
+    height: fit-content;
+}
+
+
+.changeCompanie > div:first-of-type{
+    display: flex;
+    gap: .5rem;
+    flex-wrap: wrap;
+}
+
+.changeCompanie > div:first-of-type > div{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    border-radius: var(--border-radius);
+    border: var(--border-light);
+    padding: 0.5rem;
+
+    width: 9.75rem;
+    height: 2.625rem;
+    box-sizing: border-box;
+
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+}
+
+.changeCompanie > div:first-of-type > div > p{
+    transition: all 0.2s ease-in-out;
+    color: var(--light);
+}
+
+.changeCompanie > div:first-of-type > div:hover{
+    border: var(--border);
+}
+
+.changeCompanie > div:first-of-type > div:hover > p{
+    color: var(--contrast);
+}
+
+.companieSelect {
+    position: relative;
+}	
+
+
+.companieSelect > div:first-of-type {
+    display: flex;
+    height: 2.625rem;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 0.5rem;
+    box-sizing: border-box;
+
+    border-radius: var(--border-radius);
+    border: var(--border-light);
+
+    transition: all 0.2s ease-in-out;
+}
+
+.companieSelect > div > img {
+    transition: all 0.2s ease-in-out;
+    filter: var(--svg-light);
+}
+
+.companieSelect > div:first-of-type:hover {
+    border: var(--border);
+}
+
+.companieSelect > div:first-of-type:hover > img {
+    filter: var(--svg-contrast);
+}
+
+.companieSelectOpen > div:first-of-type {
+    border: var(--border);
+}
+
+.companieSelectOpen > div:first-of-type > img {
+    filter: var(--svg-contrast);
+}
+
+
+
+.companieSelect > div:last-of-type {
+    position: absolute;
+    top: 3rem;
+    left: 0;
+
+    display: flex;
+    flex-direction: column;
+
+    width: 100%;
+    height: 10rem;
+
+    box-sizing: border-box;
+    padding: 0 0.5rem;
+
+    background-color: var(--primary);
+    border: var(--border);
+    border-radius: var(--border-radius);
+
+    overflow-y: scroll;
+
+}
+
+.companieSelect > div:last-of-type > p {
+    height: 2.625rem;
+    min-height: 2.625rem;
+    border-bottom: var(--border-light);
+
+    display: flex;
+    align-items: center;
+
+    transition: all 0.2s ease-in-out;
+    cursor: pointer;
+}
+
+.companieSelect > div:last-of-type > p:hover {
+    background-color: var(--hover-light);
 }

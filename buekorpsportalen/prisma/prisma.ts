@@ -201,6 +201,22 @@ export async function findManagerByUserId(userId:number) {
     })
 }
 
+export async function removeCompanieFromManager(managerId:number, companieId:number) {
+    return await prisma.manager.update({
+        where: {
+            id: managerId
+        },
+        data: {
+            companies: {
+                disconnect: {
+                    id: companieId
+                }
+            }
+        }
+    })
+    
+}
+
 export async function findPlatoonIdByUserId(userId:number) {
     return await prisma.member.findUnique({
         where: {
@@ -323,6 +339,18 @@ export async function findManagersCompanieById(companieId:number) {
                     name: true
                 }
             }
+        }
+    })
+}
+
+export async function findCompaniesByManagerId(managerId:number) {
+    return await prisma.manager.findUnique({
+        where: {
+            id: managerId
+        },
+        select: {
+            id: true,
+            companies: true
         }
     })
 }

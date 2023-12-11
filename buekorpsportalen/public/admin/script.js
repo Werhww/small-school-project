@@ -33,6 +33,14 @@ async function getAllData() {
     for(let i = 0; i < data.data.companies.length; i++) {
         createCompani(data.data.companies[i], data.data.platoons, data.data.members, data.data.users, data.data.managers)
     }
+
+    for(const user of data.data.users) {
+        const foundCompany = data.data.manager.companies.find(company => company.id === comapnie.id)
+
+        if (!foundCompany) continue
+
+        addManager(manager, "roleManagerList")
+    }
 }
 
 getAllData()
@@ -400,5 +408,183 @@ function addManager(member, listId) {
             wrapper.remove()
         }
     })
+
+    buttons[1].addEventListener("click", async () => {
+        const deletePopup = await alertPopup("Er du sikker på at du vil slette denne brukeren?")
+    
+        if(deletePopup === "close") return
+        if(deletePopup === "accept") {
+            const data = await request("/api/user/delete", {
+                userId: member.id
+            })
+        
+            if (data.success === false) {
+                await alertPopup(data.message)
+                return
+            }
+
+            wrapper.remove()
+        }
+    })
+
+    buttons[2].addEventListener("click", async () => {
+        const res = await fetch("/api/admin/companies")
+        const allCompanies = await res.json()
+        const data = await request("/api/admin/managerCompanies", {
+            userId: member.id
+        })
+
+        const companies = data.data.companies
+
+        if (allCompanies.success === false) {
+            await alertPopup(data.message)
+            return
+        }
+        
+        if (data.success === false) {
+            await alertPopup(data.message)
+            return
+        }
+
+        const newCompanies = await changeCompanies(allCompanies.data, companies)
+        if(newCompanies === null) return
+
+        const addedCompanies = newCompanies.filter(newCompany => !companies.find(oldCompany => oldCompany.id === newCompany.id))
+        const removedCompanies = companies.filter(oldCompany => !newCompanies.find(newCompany => newCompany.id === oldCompany.id))
+
+        for(const item of addedCompanies) {
+            const addRes = await request("/api/companie/manager/add", {
+                managerId: data.data.id,
+                companieId: item.id
+            })
+
+            if(addRes.success === false) {
+                await alertPopup(addRes.message)
+                return
+            }
+        }
+
+        for(const item of removedCompanies) {
+            await request("/api/admin/manager/removeCompanie", {
+                managerId: data.data.id,
+                companieId: item.id
+            })
+        }
+
+        location.reload()
+    })
+
+
+    async function changeCompanies(allCompanies, currentCompanies) {
+        let userCompanies = [...currentCompanies]
+
+        let alertResolve = null
+
+        const alertResponse = new Promise((resolve, reject) => {
+            alertResolve = resolve
+        })
+
+        const wrapper = document.createElement("div")
+        wrapper.classList.add("changeCompanie")
+
+        const title = document.createElement("h4")
+        title.innerText = "Endre kompanier"
+
+        const companies = document.createElement("div")
+        
+        const selectWrapper = document.createElement("div")
+        selectWrapper.classList.add("companieSelect")
+
+        const display = document.createElement("div")
+        const displayTitle = document.createElement("p")
+        displayTitle.innerText = "Velg kompanie"
+
+        const displayImg = document.createElement("img")
+        displayImg.src = "../icons/expand.svg"
+
+        display.append(displayTitle, displayImg)
+        const options = document.createElement("div")
+        options.classList.add("hidden")
+
+
+        selectWrapper.append(display, options)
+    
+        display.addEventListener("click", () => {
+            options.classList.toggle("hidden")
+            display.classList.toggle("companieSelectOpen")
+        })
+
+        for(let i = 0; i < allCompanies.length; i++) {
+            const option = document.createElement("p")
+            option.innerText = allCompanies[i].name
+
+            option.addEventListener("click", () => {
+                const found = userCompanies.find(company => company.id === allCompanies[i].id)
+                if(found) return
+
+                userCompanies.push(allCompanies[i])
+                addCompany(allCompanies[i])
+            })
+
+            options.appendChild(option)
+        }
+
+        function addCompany(company) {
+
+            const wrapper = document.createElement("div")
+
+            const title = document.createElement("p")
+            title.innerText = company.name
+
+            const remove = document.createElement("p")
+            remove.innerText = "X"
+
+            wrapper.addEventListener("click", () => {
+                const index = userCompanies.findIndex(companies => companies.id === company.id)
+                userCompanies.splice(index, 1)
+                wrapper.remove()
+            })
+
+            wrapper.append(title, remove)
+            companies.appendChild(wrapper)
+        }
+
+        for(let i = 0; i < currentCompanies.length; i++) {
+            addCompany(currentCompanies[i])
+        }
+
+        const buttonWrapper = document.createElement("div")
+        buttonWrapper.dataset.row = ""
+        buttonWrapper.dataset.gap = ""
+
+
+        const cancelButton = document.createElement("button")
+        cancelButton.innerText = "Avbryt"
+        cancelButton.classList.add("button")
+        cancelButton.dataset.denied = ""
+
+        cancelButton.addEventListener("click", () => {
+            alertResolve(null)
+            wrapper.remove()
+        })
+
+        const saveButton = document.createElement("button")
+        saveButton.innerText = "Lagre"
+        saveButton.classList.add("button")
+        saveButton.dataset.accept = ""
+
+        saveButton.addEventListener("click", async () => {
+            alertResolve(userCompanies)
+            wrapper.remove()
+        })
+        
+        buttonWrapper.append(cancelButton, saveButton)
+        
+        wrapper.append(title, companies, selectWrapper, buttonWrapper)
+
+        document.body.appendChild(wrapper)
+
+        return alertResponse
+    }
 
 }
