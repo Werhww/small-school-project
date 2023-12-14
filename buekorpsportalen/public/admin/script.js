@@ -35,11 +35,25 @@ async function getAllData() {
     }
 
     for(const user of data.data.users) {
-        const foundCompany = data.data.manager.companies.find(company => company.id === comapnie.id)
+        const foundManager = data.data.managers.find(manager => manager.userId === user.id)
+        console.log(foundManager)
+        if (!foundManager) continue
 
-        if (!foundCompany) continue
+        addManager(user, "roleManagerList")
+    }
 
-        addManager(manager, "roleManagerList")
+    for(const user of data.data.users) {
+        const foundMember = data.data.members.find(member => member.userId === user.id)
+        if (!foundMember) continue
+
+        addMember(user, "roleMemberList")
+    }
+
+    for(const user of data.data.users) {
+        const foundParrent = data.data.parrents.find(parrents => parrents.userId === user.id)
+        if (!foundParrent) continue
+
+        addMember(user, "roleParrentList")
     }
 }
 

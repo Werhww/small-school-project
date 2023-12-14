@@ -11,7 +11,6 @@
 
 }
 
-
 .companie input{
     background-color: transparent;
     outline: none;
@@ -88,6 +87,12 @@
 
 .userList > div > p {
     width: 15rem;
+}
+
+.roleLists {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
 }
 
 .roleLists > div {
@@ -237,4 +242,14 @@
 
 .companieSelect > div:last-of-type > p:hover {
     background-color: var(--hover-light);
+}
+
+.user {
+    gap: 1rem;
+    display: flex;
+    align-items: center;
+}
+
+.user > p {
+    width: 15rem;
 }
