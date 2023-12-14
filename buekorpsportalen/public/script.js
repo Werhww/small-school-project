@@ -96,7 +96,7 @@ function renderUser(user, listId, linkTo = null, linkToListName = null) {
 
     const picture = document.createElement("img")
     picture.setAttribute("loading", "lazy")
-    picture.src = "/api/user/image/" + personalData.id
+    picture.src = "/api/user/image/" + personalData?.id
     picture.addEventListener("error", () => {
         picture.src = "/icons/user.svg"
     })
@@ -148,6 +148,20 @@ function renderUser(user, listId, linkTo = null, linkToListName = null) {
 
     const hr = document.createElement("hr")
     hr.dataset.short = ""
+
+    if(!user?.personal) {
+        wrapper.innerHTML = `
+        <div class="rowItem rowPic" data-small>
+            <img src="/icons/user.svg" loading="lazy">
+        </div>
+        <p class="rowItem" data-big>Mangler personlig data<p>
+        <p class="rowItem" data-medium>personlig<p>
+        <p class="rowItem" data-big>data<p>
+        <div class="rowItem parrents" data-big data-column>
+            <p>Mangler personlig</p>
+        </div>
+        `
+    }
 
     document.getElementById(listId).appendChild(wrapper)
     document.getElementById(listId).appendChild(hr)

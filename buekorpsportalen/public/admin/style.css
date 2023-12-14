@@ -163,12 +163,45 @@
     color: var(--contrast);
 }
 
-.companieSelect {
+.user {
+    gap: 1rem;
+    display: flex;
+    align-items: center;
+}
+
+.user > p {
+    width: 15rem;
+}
+
+.changePeletong {
+    position: fixed;
+    top: 30%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1000;
+
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+
+    background-color: var(--primary);
+    border-radius: var(--border-radius);
+    border: var(--border);
+    padding: 1rem;
+
+    width: 20rem;
+    height: fit-content;
+}
+
+.peletongSelect {
+    display: flex;
+    justify-content: space-between;
     position: relative;
+    width: 100%;
 }	
 
 
-.companieSelect > div:first-of-type {
+.peletongSelect > div:first-of-type {
     display: flex;
     height: 2.625rem;
     align-items: center;
@@ -181,32 +214,33 @@
     border: var(--border-light);
 
     transition: all 0.2s ease-in-out;
+    width: 100%;
 }
 
-.companieSelect > div > img {
+.peletongSelect > div > img {
     transition: all 0.2s ease-in-out;
     filter: var(--svg-light);
 }
 
-.companieSelect > div:first-of-type:hover {
+.peletongSelect > div:first-of-type:hover {
     border: var(--border);
 }
 
-.companieSelect > div:first-of-type:hover > img {
+.peletongSelect > div:first-of-type:hover > img {
     filter: var(--svg-contrast);
 }
 
-.companieSelectOpen > div:first-of-type {
+.peletongSelect > div:first-of-type {
     border: var(--border);
 }
 
-.companieSelectOpen > div:first-of-type > img {
+.peletongSelect > div:first-of-type > img {
     filter: var(--svg-contrast);
 }
 
 
 
-.companieSelect > div:last-of-type {
+.peletongSelect > div:last-of-type {
     position: absolute;
     top: 3rem;
     left: 0;
@@ -228,7 +262,17 @@
 
 }
 
-.companieSelect > div:last-of-type > p {
+.peletongSelect > div:last-of-type > h6 {
+    height: 2.625rem;
+    min-height: 2.625rem;
+    display: flex;
+    align-items: center;
+
+    transition: all 0.2s ease-in-out;
+    cursor: pointer;
+}
+
+.peletongSelect > div:last-of-type > p, .peletongSelect > div:last-of-type > div > p {
     height: 2.625rem;
     min-height: 2.625rem;
     border-bottom: var(--border-light);
@@ -240,16 +284,21 @@
     cursor: pointer;
 }
 
-.companieSelect > div:last-of-type > p:hover {
+.peletongSelect > div:last-of-type > p:hover, .peletongSelect > div:last-of-type > div > p:hover {
     background-color: var(--hover-light);
 }
 
-.user {
-    gap: 1rem;
-    display: flex;
-    align-items: center;
-}
 
-.user > p {
-    width: 15rem;
-}
+.peletongSelect input{
+    background-color: transparent;
+    outline: none;
+    border: none;
+
+    border-bottom: var(--border-light);
+    height: 2rem;
+    transition: all 0.2s ease;
+}	
+
+.peletongSelect input:focus{
+    border-bottom: var(--border);
+}	

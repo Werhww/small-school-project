@@ -60,13 +60,19 @@ function alertPopup(message) {
     close.addEventListener("click", () => {
         alert.remove()
         alertResolve("close")
+        remove()
     })
 
     accept.addEventListener("click", () => {
         alert.remove()
         alertResolve("accept")
+        remove()
     })
 
+    const { remove } = overlay(() => {
+        alert.remove()
+        alertResolve("close")
+    }, true)
     document.body.appendChild(alert)
     return alertResponse
 }
@@ -96,7 +102,7 @@ async function newPlatoon(companieId, reload = true) {
     cancel.dataset.denied = ""
     cancel.addEventListener("click", () => {
         wrapper.remove()
-        outOfBound.remove()
+        remove()
     })
 
     const create = document.createElement("button")
@@ -125,7 +131,7 @@ async function newPlatoon(companieId, reload = true) {
         }
 
         wrapper.remove()
-        outOfBound.remove()
+        remove()
         alertResolve(data)
         if(reload) location.reload()
     })
@@ -137,15 +143,12 @@ async function newPlatoon(companieId, reload = true) {
     wrapper.appendChild(input)
     wrapper.appendChild(buttons)
 
-    const outOfBound = document.createElement("div")
-    outOfBound.classList.add("outOfBound")
-
-    outOfBound.addEventListener("click", () => {
+    const { remove } = overlay(() => {
+        remove()
         wrapper.remove()
-        outOfBound.remove()
-    })
+        alertResolve({ success: false })
+    }, true)
 
-    document.body.appendChild(outOfBound)
     document.body.appendChild(wrapper)
 
     return alertResponse
@@ -164,8 +167,10 @@ async function newCompanie() {
         </div>
     `
 
-    const outOfBound = document.createElement("div")
-    outOfBound.classList.add("outOfBound")
+    const { remove } = overlay(() => {
+        wrapper.remove()
+        alertResolve({ success: false })
+    }, true)
 
     let alertResolve = null
 
@@ -173,18 +178,12 @@ async function newCompanie() {
         alertResolve = resolve
     })
 
-    outOfBound.addEventListener("click", () => {
-        wrapper.remove()
-        outOfBound.remove()
-        alertResolve()
-    })
-
     wrapper.addEventListener("submit", async (e) => {
         e.preventDefault()
         const submitBtn = e.submitter
         if (submitBtn.hasAttribute("data-denied")) {
             wrapper.remove()
-            outOfBound.remove()
+            remove()
             alertResolve()
             return
         }
@@ -203,10 +202,9 @@ async function newCompanie() {
 
         alertResolve(data)
         wrapper.remove()
-        outOfBound.remove()    
+        remove()
     })
 
-    document.body.appendChild(outOfBound)
     document.body.appendChild(wrapper)
 
     return alertResponse
@@ -225,8 +223,12 @@ async function newUser(role) {
         </div>
     `
 
-    const outOfBound = document.createElement("div")
-    outOfBound.classList.add("outOfBound")
+    const { remove } = overlay(() => {
+        wrapper.remove()
+        remove()
+        alertResolve({ success: false })
+    }, true)
+
 
     let alertResolve = null
 
@@ -234,11 +236,6 @@ async function newUser(role) {
         alertResolve = resolve
     })
 
-    outOfBound.addEventListener("click", () => {
-        wrapper.remove()
-        outOfBound.remove()
-        alertResolve({ success: false })
-    })
 
     wrapper.addEventListener("submit", async (e) => {
         e.preventDefault()
@@ -247,7 +244,7 @@ async function newUser(role) {
 
         if (submitBtn.hasAttribute("data-denied")) {
             wrapper.remove()
-            outOfBound.remove()
+            remove()
             return alertResolve({ success: false })
         }
         
@@ -255,7 +252,7 @@ async function newUser(role) {
         if (password.length < 1) return
 
         wrapper.remove()
-        outOfBound.remove()
+        remove()
  
         const data = await request("/api/user/create", {
             password: password,
@@ -270,7 +267,6 @@ async function newUser(role) {
         alertResolve({ ...data, password })
     })
 
-    document.body.appendChild(outOfBound)
     document.body.appendChild(wrapper)
 
     return alertResponse
@@ -326,8 +322,10 @@ async function editPersonal(member) {
         ` 
     }
 
-    const outOfBound = document.createElement("div")
-    outOfBound.classList.add("outOfBound")
+    const { remove } = overlay(() => {
+        wrapper.remove()
+        alertResolve({ success: false })
+    }, true)
 
     let alertResolve = null
 
@@ -335,12 +333,6 @@ async function editPersonal(member) {
         alertResolve = resolve
     })
 
-    outOfBound.addEventListener("click", () => {
-        wrapper.remove()
-        outOfBound.remove()
-        alertResolve({ success: false })
-    })
-    
     wrapper.addEventListener("submit", async (e) => {
         e.preventDefault()
 
@@ -348,7 +340,7 @@ async function editPersonal(member) {
         const formDataEntries = Object.fromEntries(formData.entries())
 
         wrapper.remove()
-        outOfBound.remove()
+        remove()
  
         const data = await request("/api/user/personal/updateWithId", {
             userId: member.id,
@@ -366,7 +358,7 @@ async function editPersonal(member) {
         alertResolve({ ...data, personal: formDataEntries})
     })
 
-    document.body.append(outOfBound, wrapper)
+    document.body.append(wrapper)
 
     const onlyNumberInputs = document.querySelectorAll(".onlyNumber")
 
@@ -376,8 +368,7 @@ async function editPersonal(member) {
 
     document.getElementById("editPersonalButtons").children[0].addEventListener("click", () => {
         wrapper.remove()
-        outOfBound.remove()
-        
+        remove()
         alertResolve({ success: false })
     })
 
@@ -388,4 +379,22 @@ async function editPersonal(member) {
 async function logOut() {
     await fetch('/api/logout')
     window.location.href = '/auth'
+}
+
+function overlay(onClick, blur = false) {
+    const overlayDiv = document.createElement("div")
+    overlayDiv.id = "overlay"
+
+    overlayDiv.addEventListener("click", () => {
+        onClick()
+        overlayDiv.remove()
+    })
+    if(blur) {
+        overlayDiv.style.backgroundColor = "rgba(0, 0, 0, 0.25)"
+        overlayDiv.style.backdropFilter = "blur(6px)"
+    }
+
+    document.body.appendChild(overlayDiv)
+
+    return { overlayDiv, remove: () => overlayDiv.remove() }
 }

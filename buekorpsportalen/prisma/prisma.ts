@@ -32,6 +32,14 @@ export async function createParrent(userId:number) {
     })
 }
 
+export async function findMemberByUserId(userId:number) {
+    return await prisma.member.findFirst({
+        where: {
+            userId: userId
+        }
+    })
+}
+
 export async function addPlatoonToUser(userId:number, platoonId:number) {
     return await prisma.user.update({
         where: {
@@ -156,6 +164,26 @@ export async function addParrentToUser(userId:number, parrentId:number) {
                 update: {
                     parrents: {
                         connect: {
+                            id: parrentId
+                        }
+                    }
+                }
+            }
+        }
+    })
+
+}
+
+export async function disconnectParretFromUser(userId:number, parrentId:number) {
+    return await prisma.user.update({
+        where: {
+            id: userId
+        },
+        data: {
+            member: {
+                update: {
+                    parrents: {
+                        disconnect: {
                             id: parrentId
                         }
                     }
@@ -509,5 +537,9 @@ export async function getAllParrents() {
 }
 
 export async function getAllMembers() {
-    return await prisma.member.findMany()
+    return await prisma.member.findMany({
+        include: {
+            parrents: true
+        }
+    })
 }

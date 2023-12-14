@@ -4,7 +4,7 @@ import { join } from "path"
 import { sha256 } from "./utils";
 import cookieParser from "cookie-parser";
 import { $Enums, Companie, Personal, Platoon, User } from "@prisma/client";
-import { addImageToUser, addManagerToCompanie, addParrentToUser, addPersonalToUser, addPlatoonToUser, createCompanie, createManager, createParrent, createPlatoon, createUser, deleteCompanie, deletePlatoon, deleteUser, editCompanie, editPlatoon, findCompanieById, findCompanieManagerById, findCompaniesByManagerId, findCompaniesByUserId, findManagerByUserId, findManagersCompanieById, findManagersPersonalByCompanieId, findPersonalByUserId, findPictureByPersonalId, findPlatoonById, findPlatoonDataForDelete, findPlatoonIdByUserId, findUserById, findUserByPassword, findUserByToken, getAllCompanies, getAllManagers, getAllMembers, getAllParrents, getAllPlatoons, getAllUsers, removeCompanieFromManager, updateMember, updatePersonal } from "./prisma/prisma";
+import { addImageToUser, addManagerToCompanie, addParrentToUser, addPersonalToUser, addPlatoonToUser, createCompanie, createManager, createParrent, createPlatoon, createUser, deleteCompanie, deletePlatoon, deleteUser, disconnectParretFromUser, editCompanie, editPlatoon, findCompanieById, findCompanieManagerById, findCompaniesByManagerId, findCompaniesByUserId, findManagerByUserId, findManagersCompanieById, findManagersPersonalByCompanieId, findMemberByUserId, findPersonalByUserId, findPictureByPersonalId, findPlatoonById, findPlatoonDataForDelete, findPlatoonIdByUserId, findUserById, findUserByPassword, findUserByToken, getAllCompanies, getAllManagers, getAllMembers, getAllParrents, getAllPlatoons, getAllUsers, removeCompanieFromManager, updateMember, updatePersonal } from "./prisma/prisma";
 
 const app = express()
 const upload = multer()
@@ -256,7 +256,6 @@ app.post("/api/user/connectToParrent", async (req, res) => {
     const { userId, parrentId } = req.body
     const user = await findUserByToken(token);  
 
-
     if (user) {
         if(user.role == $Enums.Role.MEMBER || user.role == $Enums.Role.PARRENT) {
             res.json({ success: false, message: "Brukeren har ikke tilgang til dette." });
@@ -264,6 +263,24 @@ app.post("/api/user/connectToParrent", async (req, res) => {
         }
 
         await addParrentToUser(userId, parrentId);
+        res.json({ success: true, message: "Brukeren ble oppdatert." });
+    } else {
+        res.json({ success: false, message: "Brukeren eksisterer ikke.", redirect: "/auth" });
+    }
+})
+
+app.post("/api/user/disconnectParrent", async (req, res) => {
+    const token = req.cookies.token
+    const { userId, parrentId } = req.body
+    const user = await findUserByToken(token);  
+
+    if (user) {
+        if(user.role == $Enums.Role.MEMBER || user.role == $Enums.Role.PARRENT) {
+            res.json({ success: false, message: "Brukeren har ikke tilgang til dette." });
+            return
+        }
+
+        await disconnectParretFromUser(userId, parrentId);
         res.json({ success: true, message: "Brukeren ble oppdatert." });
     } else {
         res.json({ success: false, message: "Brukeren eksisterer ikke.", redirect: "/auth" });
@@ -289,14 +306,22 @@ app.post("/api/user/connectToPlatoon", async (req, res) => {
 })
 
 app.post("/api/user/changePlatoon", async (req, res) => {
+    const token = req.cookies.token
     const { userId, platoonId } = req.body
-    const user = await findUserById(userId);
+    const user = await findUserByToken(token);
+
 
     if (user) {
         if(user.role == $Enums.Role.MEMBER || user.role == $Enums.Role.PARRENT) {
             res.json({ success: false, message: "Brukeren har ikke tilgang til dette." });
             return
         }
+        const data = await findMemberByUserId(userId)
+        if(!data) {
+            await addPlatoonToUser(userId, platoonId);
+            res.json({ success: true, message: "Brukeren ble oppdatert." });
+            return
+        } 
 
         await updateMember(userId, platoonId);
         res.json({ success: true, message: "Brukeren ble oppdatert." });
