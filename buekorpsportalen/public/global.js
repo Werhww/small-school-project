@@ -272,9 +272,14 @@ async function newUser(role) {
     return alertResponse
 }
 
-async function editPersonal(member) {
+async function editPersonal(member, disable = false) {
     const wrapper = document.createElement("form")
     wrapper.classList.add("editPersonalInfo")
+
+    const { remove } = overlay(() => {
+        wrapper.remove()
+        alertResolve({ success: false })
+    }, true)
 
     let personal = member.personal
 
@@ -291,11 +296,11 @@ async function editPersonal(member) {
                 <input value="${personal.firstName}" type="text" required name="firstName" data-normal data-unset class="input" placeholder="fornavn">
                 <input value="${personal.lastName}" type="text" required name="lastName" data-normal data-unset class="input" placeholder="etternavn">
                 <input value="${personal.email}" type="text" required name="email" data-normal data-unset class="input" placeholder="epost">
-                <input value="${personal.phone}" type="text" required name="phone" data-normal data-unset class="input" placeholder="telefon" maxlength="8">
+                <input value="${personal.phone}" type="text" required name="phone" data-normal data-unset class="input onlyNumber" placeholder="telefon" maxlength="8">
                 <input value="${personal.birthDate.split("T")[0]}" type="date" required name="birthDate" data-normal data-unset class="input onlyNumber" placeholder="bursdag">
                 <input value="${personal.address}" type="text" required name="address" data-normal data-unset class="input" placeholder="addresse">
                 <input value="${personal.city}" type="text" required name="city" data-normal data-unset class="input" placeholder="by">
-                <input value="${personal.postalCode}" type="text" required name="postalCode" data-normal data-unset class="input onlyNumber" placeholder="postnummer">
+                <input value="${personal.postalCode}" type="text" required name="postalCode" data-normal data-unset maxlength="4" class="input onlyNumber" placeholder="postnummer">
 
                 <div data-row data-gap id="editPersonalButtons" >
                     <button type="button" class="button" data-denied>Avbryt</button>
@@ -309,11 +314,11 @@ async function editPersonal(member) {
             <input type="text" required name="firstName" data-normal data-unset class="input" placeholder="fornavn">
             <input type="text" required name="lastName" data-normal data-unset class="input" placeholder="etternavn">
             <input type="text" required name="email" data-normal data-unset class="input" placeholder="epost">
-            <input type="text" required name="phone" data-normal data-unset class="input" placeholder="telefon" maxlength="8">
+            <input type="text" required name="phone" data-normal data-unset class="input onlyNumber" placeholder="telefon" maxlength="8">
             <input type="date" required name="birthDate" data-normal data-unset class="input onlyNumber" placeholder="bursdag">
             <input type="text" required name="address" data-normal data-unset class="input" placeholder="addresse">
             <input type="text" required name="city" data-normal data-unset class="input" placeholder="by">
-            <input type="text" required name="postalCode" data-normal data-unset class="input onlyNumber" placeholder="postnummer">
+            <input type="text" required name="postalCode" data-normal data-unset class="input onlyNumber" maxlength="4" placeholder="postnummer">
 
             <div data-row data-gap id="editPersonalButtons" >
                 <button type="button" class="button" data-denied>Avbryt</button>
@@ -321,11 +326,6 @@ async function editPersonal(member) {
             </div>
         ` 
     }
-
-    const { remove } = overlay(() => {
-        wrapper.remove()
-        alertResolve({ success: false })
-    }, true)
 
     let alertResolve = null
 
@@ -335,19 +335,50 @@ async function editPersonal(member) {
 
     wrapper.addEventListener("submit", async (e) => {
         e.preventDefault()
+        if(disable) {
+            wrapper.remove()
+            remove()
+            alertResolve(null)
+            return
+        }
+
 
         const formData = new FormData(wrapper)
         const formDataEntries = Object.fromEntries(formData.entries())
 
         wrapper.remove()
         remove()
- 
+
+        let changedElements = {}
+
+        for (const key in formDataEntries) {
+            if(!personal) {
+                if(key === "birthDate") {
+                    changedElements[key] = new Date(formDataEntries[key]).toISOString()
+                    continue
+                }
+
+                changedElements[key] = formDataEntries[key]
+                continue
+            }
+
+            if(key === "birthDate") {
+                if (formDataEntries[key] !== personal[key].split("T")[0]) {
+                    changedElements[key] = new Date(formDataEntries[key]).toISOString()
+                }
+                continue
+            }
+
+            if (formDataEntries[key] !== personal[key]) {
+                changedElements[key] = formDataEntries[key]
+            }
+        }
+
         const data = await request("/api/user/personal/updateWithId", {
             userId: member.id,
             personalBody: {
-                ...formDataEntries,
-                birthDate: new Date(formDataEntries.birthDate).toISOString()
-            }
+                ...changedElements,
+            } 
         })
         
         if (data.success === false) {
@@ -359,6 +390,11 @@ async function editPersonal(member) {
     })
 
     document.body.append(wrapper)
+    if(disable) {
+        for(const input of wrapper.querySelectorAll("input")) {
+            input.disabled = true
+        }
+    }
 
     const onlyNumberInputs = document.querySelectorAll(".onlyNumber")
 

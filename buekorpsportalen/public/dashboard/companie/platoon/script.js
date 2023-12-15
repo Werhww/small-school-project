@@ -100,6 +100,11 @@ function renderUser(user, listId, linkTo = null, linkToListName = null) {
     wrapper.appendChild(email)
     wrapper.appendChild(parrentWrapper)
 
+    wrapper.addEventListener("click", (e) => {
+        if(e.target.dataset.parrent == "yes") return
+        editPersonal(user, false)
+    })
+
     const hr = document.createElement("hr")
     hr.dataset.short = ""
 
@@ -141,6 +146,7 @@ function addLinkTo(firstName, lastName, phone, listName, wrapperId = null) {
         
     })
 
+    parrentLink.dataset.parrent = "yes"
     if(wrapperId) {
         document.getElementById(wrapperId).appendChild(parrentLink)
     }

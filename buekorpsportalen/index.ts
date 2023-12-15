@@ -17,7 +17,7 @@ app.use (async (req, res, next) => {
     if(req.path === "/api/auth") return next();
 
     const token = req.cookies.token
-    if(!token) return res.json({ success: false, message: "Bruker ble ikke funnet.", redirect: "/auth" });
+    if(!token) return res.json({ success: false, message: "Du må logge inn.", redirect: "/auth" });
     next();
 })
 
@@ -92,10 +92,8 @@ app.post("/api/user/create", async (req, res) => {
     const user = await findUserByPassword(hash);
 
     if (user) {
-        console.log("Brukeren eksisterer allerede.");
         res.json({ success: false, message: "Brukeren eksisterer allerede." });
     } else {
-        console.log("Brukeren ble opprettet.");
         const user = await createUser({ ...body, password: hash })
 
         if(body.role === $Enums.Role.MANAGER) {
@@ -108,7 +106,7 @@ app.post("/api/user/create", async (req, res) => {
         
         res.json({ success: true, message: "Brukeren ble opprettet.", data: user  });
     }
-})
+}) 
 
 app.get("/api/user/personal/token", async (req, res) => {
     const token = req.cookies.token
@@ -139,33 +137,29 @@ app.post("/api/user/personal/id", async (req, res) => {
         res.json({ success: false, message: "Brukeren har ikke personlig informasjon." });
     }
 })
-
+ 
 app.post("/api/user/personal/update", async (req, res) => {
     const body = req.body as Personal
     const token = req.cookies.token 
     const user = await findUserByToken(token);
+  
+    if (!user) return res.json({ success: false, message: "Brukeren eksisterer ikke.", redirect: "/auth" });
+    const redirect = user.role === $Enums.Role.MEMBER ? "/" : "/dashboard"
 
-    if (user) {
-        const personal = await findPersonalByUserId(user.id)
 
-        if (personal) {
-            updatePersonal(personal.id, body).catch((e) => {
-                console.log(e);
-                res.json({ success: false, message: "Epost eller mobil nummer er alerede i bruk" });
-            })    
+    const personal = await findPersonalByUserId(user.id)
 
-            return res.json({ success: true, message: "Brukeren ble oppdatert." });
-        } 
+    if (personal) {
+        const update = await updatePersonal(personal.id, body).catch(() => null)
 
-        await addPersonalToUser(user.id, body).catch((e) => {
-            console.log(e);
-            res.json({ success: false, message: "Epost eller mobil nummer er alerede i bruk" });
-        })
+        if(!update) return res.json({ success: false, message: "Epost eller mobil nummer er alerede i bruk", redirect:"/auth" });
+        return res.json({ success: true, message: "Brukeren ble oppdatert.", redirect});
+    } 
 
-        res.json({ success: true, message: "Brukeren ble oppdatert." });
-    } else {
-        res.json({ success: false, message: "Brukeren eksisterer ikke." });
-    }
+    const update = await addPersonalToUser(user.id, body).catch(() => null)
+
+    if(!update) return res.json({ success: false, message: "Epost eller mobil nummer er alerede i bruk", redirect:"/auth" });
+    res.json({ success: true, message: "Brukeren ble oppdatert.", redirect });
 })
 
 app.post("/api/user/personal/updateWithId", async (req, res) => {
@@ -181,48 +175,50 @@ app.post("/api/user/personal/updateWithId", async (req, res) => {
         
         const personal = await findPersonalByUserId(userId)
         if (personal) {
-            updatePersonal(personal.id, personalBody).catch((e) => {
+            try {
+                await updatePersonal(personal.id, personalBody)
+            } catch(e) {
                 console.log(e);
-                res.json({ success: false, message: "Epost eller mobil nummer er alerede i bruk" });
-            })    
+                return res.json({ success: false, message: "Epost eller mobil nummer er alerede i bruk" });
+            }
 
             return res.json({ success: true, message: "Brukeren ble oppdatert." });
         } 
 
-        await addPersonalToUser(userId, personalBody).catch((e) => {
+        try {
+            await addPersonalToUser(userId, personalBody)
+        } catch(e) {
             console.log(e);
             res.json({ success: false, message: "Epost eller mobil nummer er alerede i bruk" });
-        })
-
+            return
+        }
+ 
+ 
         res.json({ success: true, message: "Brukeren ble oppdatert." });
     } else {
         res.json({ success: false, message: "Brukeren eksisterer ikke." });
     }
 })
 
-app.post("/api/user/image/add", upload.single("picture"), async (req, res) => {
+app.post("/api/user/image/add", upload.single("file"), async (req, res) => {
     const buffer = req.file?.buffer
     const token = req.cookies.token
+    
+    if(!buffer) return res.json({ success: false, message: "Error med overføring av bilde." });
+    
     const user = await findUserByToken(token);
+    if(!user) return res.json({ success: false, message: "Brukeren eksisterer ikke." });
 
-    if (user) {
-        if(!buffer) {
-            res.json({ success: false, message: "Bilde ble ikke funnet." });
-            return
-        }
 
-        await addImageToUser(user.id, buffer)
-        res.json({ success: true, message: "Brukeren ble oppdatert." });
-    } else {
-        res.json({ success: false, message: "Brukeren eksisterer ikke." });
-    }
+    await addImageToUser(user.id, buffer)
+    res.json({ success: true, message: "Brukeren ble oppdatert." });
 })
 
 app.get("/api/user/image/:id", async (req, res) => {
     const { id } = req.params
     const data = await findPictureByPersonalId(Number(id));
 
-    if(!data) {
+    if(!data || !data.picture) {
         res.writeHead(200, {
             'Content-Type': "image/*",
             'Content-disposition': 'attachment;filename=' + "NoImage",
@@ -230,15 +226,6 @@ app.get("/api/user/image/:id", async (req, res) => {
         })
 
         res.end(Buffer.from([]));
-        return
-    } else if(!data.picture) {
-        res.writeHead(200, {
-            'Content-Type': "image/*",
-            'Content-disposition': 'attachment;filename=' + "NoImage",
-            'Content-Length': 0
-        })
-
-        res.end(Buffer.from([]))
         return
     }
 
@@ -434,8 +421,7 @@ app.post("/api/companie/edit", async (req, res) => {
         return
     }
 
-    const companie = await editCompanie(companieId, name).catch((e) => {
-        console.log(e);
+    await editCompanie(companieId, name).catch((e) => {
         res.json({ success: false, message: "Kompaniet ble ikke oppdatert." })
     })
 
@@ -538,7 +524,6 @@ app.get("/api/platoon/token", async (req, res) => {
 })
 
 app.post("/api/platoon/id", async (req, res) => {
-    console.log("Platoon start");
     const time = Date.now()
 
     const { platoonId } = req.body
@@ -554,14 +539,10 @@ app.post("/api/platoon/id", async (req, res) => {
         return
     }
 
-    console.log("Platoon id start ", (Date.now() - time) / 1000, "s");
     const platoon = await findPlatoonById(platoonId);
-    console.log("Platoon id done ", (Date.now() - time) / 1000, "s");
 
     if(platoon) { 
-        console.log("Manager id start ", (Date.now() - time) / 1000, "s");
         const managers = await findManagersPersonalByCompanieId(platoon?.companieId)
-        console.log("Manager id done ", (Date.now() - time) / 1000, "s");
 
 
         res.json({ 
@@ -575,9 +556,6 @@ app.post("/api/platoon/id", async (req, res) => {
     } else {
         res.json({ success: false, message: "Palaton ble ikke funnet.", redirect: "/dashboard/companie" });
     }
-
-    console.log("All done ", (Date.now() - time) / 1000, "s");
-
 })
 
 app.post("/api/platoon/edit", async (req, res) => {

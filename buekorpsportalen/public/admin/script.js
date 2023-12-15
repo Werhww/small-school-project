@@ -361,8 +361,11 @@ function addMember(member, listId, comapnies, platoons, members, parrents, users
 
     const buttons = document.getElementById(memberButtonsId).children
 
-    buttons[0].addEventListener("click", () => {
-        editPersonal(member)
+    buttons[0].addEventListener("click", async () => {
+        const update = await editPersonal(member)
+        if(update.success === false) return
+
+        wrapper.children[0].innerText = `${update.personal.firstName} ${update.personal.lastName}`
     })
 
     buttons[1].addEventListener("click", async () => {
@@ -736,7 +739,7 @@ function addManager(member, listId) {
     const nameId = `Name${Math.floor(Math.random() * 100000)}`
 
     wrapper.innerHTML += `
-        <p>${member?.personal?.firstName} ${member?.personal?.lastName}</p>
+        <p id="${nameId}">${member?.personal?.firstName} ${member?.personal?.lastName}</p>
         <div class="buttons" id="${buttonsId}">
             <button class="normal">Rediger</button>
             <button class="red">Slett</button>
@@ -751,7 +754,7 @@ function addManager(member, listId) {
         const newData = await editPersonal(member)
         if (newData.success === false) return
 
-        document.getElementById(nameId).innerText = `${newData.data.firstName} ${newData.data.lastName}`
+        document.getElementById(nameId).innerText = `${newData.personal.firstName} ${newData.personal.lastName}`
     })
 
     buttons[1].addEventListener("click", async () => {
@@ -825,7 +828,7 @@ function addManager(member, listId) {
 
         let alertResolve = null
 
-        const alertResponse = new Promise((resolve, reject) => {
+        const alertResponse = new Promise((resolve) => {
             alertResolve = resolve
         })
 
@@ -844,7 +847,7 @@ function addManager(member, listId) {
         const companies = document.createElement("div")
         
         const selectWrapper = document.createElement("div")
-        selectWrapper.classList.add("companieSelect")
+        selectWrapper.classList.add("peletongSelect")
 
         const display = document.createElement("div")
         const displayTitle = document.createElement("p")
@@ -958,8 +961,11 @@ function addParrent(member, listId) {
 
     const buttons = document.getElementById(memberButtonsId).children
 
-    buttons[0].addEventListener("click", () => {
-        editPersonal(member)
+    buttons[0].addEventListener("click", async () => {
+        const update = await editPersonal(member)
+        if(update.success === false) return
+
+        wrapper.children[0].innerText = `${update.personal.firstName} ${update.personal.lastName}`
     })
 
     buttons[1].addEventListener("click", async () => {
@@ -986,7 +992,7 @@ document.getElementById("newLeder").addEventListener("click", async () => {
     const data = await newUser("MANAGER")
     if(data.success == false) return
     console.log(data)
-    addManager(data, "roleManagerList")
+    addManager({ ...data.data, password: data.password }, "roleManagerList")
     await alertPopup("Bruker vil legge til personlig informasjon ved første innlogging. " + " Ikke glem passordet" + "\n Passord:" + data.password)
 })
 
@@ -994,16 +1000,17 @@ document.getElementById("newParrent").addEventListener("click", async () => {
     const data = await newUser("PARRENT")
     if(data.success == false) return
 
-    addParrent(data, "roleParrentList")
+    addParrent({ ...data.data, password: data.password }, "roleParrentList")
     await alertPopup("Bruker vil legge til personlig informasjon ved første innlogging. " + " Ikke glem passordet" + "\n Passord:" + data.password)
 
 })
 
 document.getElementById("newMember").addEventListener("click", async () => {
     const data = await newUser("MEMBER")
+    console.log(data)
     if(data.success == false) return
 
-    addMember(data, "roleMemberList")
+    addMember({ ...data.data, password: data.password }, "roleMemberList")
     await alertPopup("Bruker vil legge til personlig informasjon ved første innlogging. " + " Ikke glem passordet" + "\n Passord:" + data.password)
 
 })

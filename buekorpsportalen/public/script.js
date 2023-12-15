@@ -89,6 +89,10 @@ function renderUser(user, listId, linkTo = null, linkToListName = null) {
     wrapper.dataset.alignCenter = ""
     wrapper.id = "wrapper" + personalData?.phone
 
+    const leftWrapper = document.createElement("div")
+    leftWrapper.dataset.row = ""
+    leftWrapper.dataset.alignCenter = ""
+
     const pictureWrapper = document.createElement("div")
     pictureWrapper.classList.add("rowItem")
     pictureWrapper.classList.add("rowPic")
@@ -127,7 +131,9 @@ function renderUser(user, listId, linkTo = null, linkToListName = null) {
     parrentWrapper.dataset.big = ""
     parrentWrapper.dataset.column = ""
     parrentWrapper.id = personalData?.phone + "LinkTo"
-    
+    parrentWrapper.dataset.parrent = "yes"
+
+
     if (linkTo) {
         linkTo.forEach(parrent => {
             const parrentLink = addLinkTo(
@@ -146,6 +152,11 @@ function renderUser(user, listId, linkTo = null, linkToListName = null) {
     wrapper.appendChild(email)
     wrapper.appendChild(parrentWrapper)
 
+    wrapper.addEventListener("click", (e) => {
+        if(e.target.dataset.parrent == "yes") return
+        editPersonal(user, true)
+    })
+
     const hr = document.createElement("hr")
     hr.dataset.short = ""
 
@@ -154,11 +165,11 @@ function renderUser(user, listId, linkTo = null, linkToListName = null) {
         <div class="rowItem rowPic" data-small>
             <img src="/icons/user.svg" loading="lazy">
         </div>
-        <p class="rowItem" data-big>Mangler personlig data<p>
-        <p class="rowItem" data-medium>personlig<p>
-        <p class="rowItem" data-big>data<p>
+        <p class="rowItem" data-big>Mangler</p>
+        <p class="rowItem" data-medium>personlig</p>
+        <p class="rowItem" data-big>data</p>
         <div class="rowItem parrents" data-big data-column>
-            <p>Mangler personlig</p>
+            <p>Mangler data</p>
         </div>
         `
     }
@@ -201,6 +212,7 @@ function addLinkTo(firstName, lastName, phone, listName, wrapperId = null) {
         
     })
 
+    parrentLink.dataset.parrent = "yes"
     if(wrapperId) {
         document.getElementById(wrapperId).appendChild(parrentLink)
     }
